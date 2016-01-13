@@ -1,0 +1,111 @@
+z[00] LFSR:---11111 toggle:------10 Z: 1
+k[00] 9cd782 939aa8 fbc61a 8c0eda 
+c[00] 6e06a5 acf156 
+z[01] LFSR:---01101 toggle:------01 Z: 0
+k[01] 939aa8 fbc61a 8c0eda 326b37 
+c[01] acf156 beea64 
+z[02] LFSR:---00110 toggle:------10 Z: 0
+k[02] fbc61a 8c0eda 326b37 37ff5a 
+c[02] beea64 08e316 
+z[03] LFSR:---00001 toggle:------01 Z: 0
+k[03] 8c0eda 326b37 37ff5a d17827 
+c[03] 08e316 4d1813 
+z[04] LFSR:---10000 toggle:------10 Z: 1
+k[04] 326b37 37ff5a d17827 df5ec7 
+c[04] 4d1813 fbcd98 
+z[05] LFSR:---01000 toggle:------01 Z: 0
+k[05] 37ff5a d17827 df5ec7 18e570 
+c[05] fbcd98 7f5331 
+z[06] LFSR:---10100 toggle:------10 Z: 1
+k[06] d17827 df5ec7 18e570 5bafe8 
+c[06] 7f5331 0f0ed7 
+z[07] LFSR:---01010 toggle:------01 Z: 0
+k[07] df5ec7 18e570 5bafe8 dee1f2 
+c[07] 0f0ed7 939c91 
+z[08] LFSR:---10111 toggle:------10 Z: 1
+k[08] 18e570 5bafe8 dee1f2 93a2c9 
+c[08] 939c91 d6cf5b 
+z[09] LFSR:---11001 toggle:------01 Z: 1
+k[09] 5bafe8 dee1f2 93a2c9 33a623 
+c[09] d6cf5b 761d4b 
+z[10] LFSR:---01100 toggle:------10 Z: 0
+k[10] dee1f2 93a2c9 33a623 781706 
+c[10] 761d4b 7aa766 
+z[11] LFSR:---10110 toggle:------01 Z: 1
+k[11] 93a2c9 33a623 781706 ce4cfe 
+c[11] 7aa766 f78a64 
+z[12] LFSR:---01001 toggle:------10 Z: 0
+k[12] 33a623 781706 ce4cfe 907913 
+c[12] f78a64 bef327 
+z[13] LFSR:---00100 toggle:------01 Z: 0
+k[13] 781706 ce4cfe 907913 3c9fd5 
+c[13] bef327 41ff21 
+z[14] LFSR:---00010 toggle:------10 Z: 0
+k[14] ce4cfe 907913 3c9fd5 101595 
+c[14] 41ff21 2a3a77 
+z[15] LFSR:---00011 toggle:------01 Z: 0
+k[15] 907913 3c9fd5 101595 e2a4ee 
+c[15] 2a3a77 1bc639 
+z[16] LFSR:---10011 toggle:------10 Z: 1
+k[16] 3c9fd5 101595 e2a4ee 082a71 
+c[16] 1bc639 4b00f0 
+z[17] LFSR:---11011 toggle:------01 Z: 1
+k[17] 101595 e2a4ee 082a71 bc5c8a 
+c[17] 4b00f0 8b9932 
+z[18] LFSR:---01111 toggle:------10 Z: 0
+k[18] e2a4ee 082a71 bc5c8a 3fe674 
+c[18] 8b9932 4bb04f 
+z[19] LFSR:---00101 toggle:------01 Z: 0
+k[19] 082a71 bc5c8a 3fe674 0cc9b5 
+c[19] 4bb04f 39d1b0 
+z[20] LFSR:---10010 toggle:------10 Z: 1
+k[20] bc5c8a 3fe674 0cc9b5 8136bb 
+c[20] 39d1b0 7c6014 
+z[21] LFSR:---01011 toggle:------01 Z: 0
+k[21] 3fe674 0cc9b5 8136bb c60c38 
+c[21] 7c6014 6e5df1 
+z[22] LFSR:---00111 toggle:------10 Z: 0
+k[22] 0cc9b5 8136bb c60c38 944601 
+c[22] 6e5df1 0de0b2 
+z[23] LFSR:---10001 toggle:------01 Z: 1
+k[23] 8136bb c60c38 944601 6566f4 
+c[23] 0de0b2 3c39c9 
+z[24] LFSR:---11000 toggle:------10 Z: 1
+k[24] c60c38 944601 6566f4 bdbd8c 
+c[24] 3c39c9 78fb0a 
+z[25] LFSR:---11100 toggle:------01 Z: 1
+k[25] 944601 6566f4 bdbd8c f15c2f 
+c[25] 78fb0a df8bdf 
+z[26] LFSR:---11110 toggle:------10 Z: 1
+k[26] 6566f4 bdbd8c f15c2f a8b175 
+c[26] df8bdf 25729f 
+z[27] LFSR:---11101 toggle:------01 Z: 1
+k[27] bdbd8c f15c2f a8b175 ba1caf 
+c[27] 25729f b2d828 
+z[28] LFSR:---01110 toggle:------10 Z: 0
+k[28] f15c2f a8b175 ba1caf 246ece 
+c[28] b2d828 8a5ce3 
+z[29] LFSR:---10101 toggle:------01 Z: 1
+k[29] a8b175 ba1caf 246ece d76743 
+c[29] 8a5ce3 586d67 
+z[30] LFSR:---11010 toggle:------10 Z: 1
+k[30] ba1caf 246ece d76743 677835 
+c[30] 586d67 acd303 
+z[31] LFSR:---11111 toggle:------01 Z: 1
+k[31] 246ece d76743 677835 b7ec48 
+c[31] acd303 0dcf25 
+z[32] LFSR:---01101 toggle:------10 Z: 0
+k[32] d76743 677835 b7ec48 7011c3 
+c[32] 0dcf25 e0fa5c 
+z[33] LFSR:---00110 toggle:------01 Z: 0
+k[33] 677835 b7ec48 7011c3 1a1918 
+c[33] e0fa5c 546bee 
+z[34] LFSR:---00001 toggle:------10 Z: 0
+k[34] b7ec48 7011c3 1a1918 121110 
+c[34] 546bee 8b82a1 
+z[35] LFSR:---10000 toggle:------01 Z: 1
+k[35] 7011c3 1a1918 121110 0a0908 
+c[35] 8b82a1 726963 
+z[36] LFSR:---01000 toggle:------10 Z: 0
+k[36] 1a1918 121110 0a0908 020100 
+c[36] 726963 20646e 

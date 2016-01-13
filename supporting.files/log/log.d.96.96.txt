@@ -1,0 +1,159 @@
+z[00] LFSR:---00010 toggle:------10 Z: 1
+k[00] c833352181c5d587c9068df1 
+c[00] 602807a462b469063d8ff082 
+z[01] LFSR:---00001 toggle:------01 Z: 0
+k[01] d587c9068df110244f6ec759 
+c[01] 69063d8ff082d618b5e5e7e4 
+z[02] LFSR:---11000 toggle:------10 Z: 0
+k[02] 10244f6ec759997efbe24693 
+c[02] d618b5e5e7e4a02b7039ed42 
+z[03] LFSR:---10100 toggle:------01 Z: 1
+k[03] 997efbe24693a5638053541e 
+c[03] a02b7039ed42f386d5304470 
+z[04] LFSR:---01010 toggle:------10 Z: 1
+k[04] a5638053541e587b4c12e6ac 
+c[04] f386d5304470b04e48aa1acc 
+z[05] LFSR:---11101 toggle:------01 Z: 1
+k[05] 587b4c12e6ac1414a2efd95c 
+c[05] b04e48aa1acc66a3d567f28e 
+z[06] LFSR:---01110 toggle:------10 Z: 1
+k[06] 1414a2efd95ce4476d9e1fef 
+c[06] 66a3d567f28e4fc352694b1e 
+z[07] LFSR:---11111 toggle:------01 Z: 1
+k[07] e4476d9e1fefe927c67a04a2 
+c[07] 4fc352694b1e338b7afacc59 
+z[08] LFSR:---01111 toggle:------10 Z: 1
+k[08] e927c67a04a2680e16c900cc 
+c[08] 338b7afacc59eaf25f8f6284 
+z[09] LFSR:---00111 toggle:------01 Z: 0
+k[09] 680e16c900cc5d591a304b4a 
+c[09] eaf25f8f6284155f91f58908 
+z[10] LFSR:---11011 toggle:------10 Z: 0
+k[10] 5d591a304b4a798f5bd3f2ed 
+c[10] 155f91f58908cc926203b459 
+z[11] LFSR:---01101 toggle:------01 Z: 0
+k[11] 798f5bd3f2edda0ffb08f5c5 
+c[11] cc926203b4596d39e2f7e52a 
+z[12] LFSR:---00110 toggle:------10 Z: 1
+k[12] da0ffb08f5c56091a4fd9cf5 
+c[12] 6d39e2f7e52a008688c4b641 
+z[13] LFSR:---00011 toggle:------01 Z: 0
+k[13] 6091a4fd9cf5dfeb2a276069 
+c[13] 008688c4b641b0c0eb421c47 
+z[14] LFSR:---11001 toggle:------10 Z: 0
+k[14] dfeb2a276069396d8ce4f902 
+c[14] b0c0eb421c47ba69eb2c3edd 
+z[15] LFSR:---01100 toggle:------01 Z: 0
+k[15] 396d8ce4f90244afbc8a4f25 
+c[15] ba69eb2c3edd7d0bff60f5ae 
+z[16] LFSR:---11110 toggle:------10 Z: 0
+k[16] 44afbc8a4f253a4d7f42ebe8 
+c[16] 7d0bff60f5ae7e1c092ca9d0 
+z[17] LFSR:---10111 toggle:------01 Z: 1
+k[17] 3a4d7f42ebe83fbd3b69c31a 
+c[17] 7e1c092ca9d0a6cee0b2c1d5 
+z[18] LFSR:---10011 toggle:------10 Z: 0
+k[18] 3fbd3b69c31a21bef466b047 
+c[18] a6cee0b2c1d58819ffc09f63 
+z[19] LFSR:---10001 toggle:------01 Z: 1
+k[19] 21bef466b047566ef55c81ea 
+c[19] 8819ffc09f63c0f42a6d1f31 
+z[20] LFSR:---10000 toggle:------10 Z: 0
+k[20] 566ef55c81ea31ea3a671799 
+c[20] c0f42a6d1f313a0b2809c47d 
+z[21] LFSR:---01000 toggle:------01 Z: 0
+k[21] 31ea3a6717991cb2ee49ed9c 
+c[21] 3a0b2809c47d346a6403eb63 
+z[22] LFSR:---11100 toggle:------10 Z: 0
+k[22] 1cb2ee49ed9c8c48b6b54b0f 
+c[22] 346a6403eb630fae0eb060fa 
+z[23] LFSR:---10110 toggle:------01 Z: 1
+k[23] 8c48b6b54b0fea008c0befb1 
+c[23] 0fae0eb060faeedec2a9473e 
+z[24] LFSR:---01011 toggle:------10 Z: 1
+k[24] ea008c0befb15057500b77ff 
+c[24] eedec2a9473e3802d55c0592 
+z[25] LFSR:---00101 toggle:------01 Z: 0
+k[25] 5057500b77ff0af0ecf5c9cc 
+c[25] 3802d55c05920420732c9a9a 
+z[26] LFSR:---11010 toggle:------10 Z: 0
+k[26] 0af0ecf5c9ccee59bca56da6 
+c[26] 0420732c9a9ac69a81531258 
+z[27] LFSR:---10101 toggle:------01 Z: 1
+k[27] ee59bca56da64621bf54cd5e 
+c[27] c69a81531258d06acb361e27 
+z[28] LFSR:---10010 toggle:------10 Z: 0
+k[28] 4621bf54cd5e3d006f454725 
+c[28] d06acb361e279af0d4c209a2 
+z[29] LFSR:---01001 toggle:------01 Z: 0
+k[29] 3d006f4547254dae4bb7ce34 
+c[29] 9af0d4c209a2c6c75389f499 
+z[30] LFSR:---00100 toggle:------10 Z: 1
+k[30] 4dae4bb7ce340f90bd773dfc 
+c[30] c6c75389f4990b7fa6826f3b 
+z[31] LFSR:---00010 toggle:------01 Z: 0
+k[31] 0f90bd773dfcf35aa831a5a9 
+c[31] 0b7fa6826f3b0ec561b5f7de 
+z[32] LFSR:---00001 toggle:------10 Z: 1
+k[32] f35aa831a5a95131bd0decef 
+c[32] 0ec561b5f7de645b1c3b92a0 
+z[33] LFSR:---11000 toggle:------01 Z: 1
+k[33] 5131bd0decef13907bbf3907 
+c[33] 645b1c3b92a0c42d52f6a418 
+z[34] LFSR:---10100 toggle:------10 Z: 0
+k[34] 13907bbf39073d854a3e07a2 
+c[34] c42d52f6a4184139b97b0d61 
+z[35] LFSR:---01010 toggle:------01 Z: 0
+k[35] 3d854a3e07a2880779a4e675 
+c[35] 4139b97b0d6148fdbcba77a8 
+z[36] LFSR:---11101 toggle:------10 Z: 0
+k[36] 880779a4e6752bfa2d6f2af7 
+c[36] 48fdbcba77a8d88d5e895177 
+z[37] LFSR:---01110 toggle:------01 Z: 0
+k[37] 2bfa2d6f2af7e03861200e78 
+c[37] d88d5e8951774bea2eaf1ec7 
+z[38] LFSR:---11111 toggle:------10 Z: 0
+k[38] e03861200e78460158a6d423 
+c[38] 4bea2eaf1ec73320b18dfb43 
+z[39] LFSR:---01111 toggle:------01 Z: 0
+k[39] 460158a6d4234367a0414642 
+c[39] 3320b18dfb43e40e49c2f78b 
+z[40] LFSR:---00111 toggle:------10 Z: 1
+k[40] 4367a0414642d5a429551773 
+c[40] e40e49c2f78b7eb53d56b91b 
+z[41] LFSR:---11011 toggle:------01 Z: 1
+k[41] d5a429551773fb7698014a26 
+c[41] 7eb53d56b91b508476304bf6 
+z[42] LFSR:---01101 toggle:------10 Z: 1
+k[42] fb7698014a269a826c2ad568 
+c[42] 508476304bf62626a9fdd5ea 
+z[43] LFSR:---00110 toggle:------01 Z: 0
+k[43] 9a826c2ad5689e710cb94220 
+c[43] 2626a9fdd5ea52668caff47a 
+z[44] LFSR:---00011 toggle:------10 Z: 1
+k[44] 9e710cb942207f54a28996f2 
+c[44] 52668caff47a3464309ffaa1 
+z[45] LFSR:---11001 toggle:------01 Z: 1
+k[45] 7f54a28996f209912d3f166c 
+c[45] 3464309ffaa1ea6762d5a992 
+z[46] LFSR:---01100 toggle:------10 Z: 1
+k[46] 09912d3f166cc1006a027aa4 
+c[46] ea6762d5a99218bb1462346e 
+z[47] LFSR:---11110 toggle:------01 Z: 1
+k[47] c1006a027aa4225ed920816f 
+c[47] 18bb1462346e9bc1ca79915d 
+z[48] LFSR:---10111 toggle:------10 Z: 0
+k[48] 225ed920816f2891a34b9d62 
+c[48] 9bc1ca79915d5eaf8e5eece1 
+z[49] LFSR:---10011 toggle:------01 Z: 1
+k[49] 2891a34b9d62ba3a0882b4e9 
+c[49] 5eaf8e5eece1f64be72c5773 
+z[50] LFSR:---10001 toggle:------10 Z: 0
+k[50] ba3a0882b4e97b8abd2c1f4c 
+c[50] f64be72c5773b48da3938c84 
+z[51] LFSR:---10000 toggle:------01 Z: 1
+k[51] 7b8abd2c1f4c0d0c0b0a0908 
+c[51] b48da3938c842072616c6c69 
+z[52] LFSR:---01000 toggle:------10 Z: 1
+k[52] 0d0c0b0a0908050403020100 
+c[52] 2072616c6c69702065687420 

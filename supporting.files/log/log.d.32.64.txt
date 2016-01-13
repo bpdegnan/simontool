@@ -1,0 +1,99 @@
+z[00] LFSR:---10000 toggle:------10 Z: 1
+k[00] 4d83 7db9 32f2 fa04 
+c[00] c69b e9bb 
+z[01] LFSR:---01000 toggle:------01 Z: 0
+k[01] 7db9 32f2 fa04 8d14 
+c[01] e9bb 7e01 
+z[02] LFSR:---11100 toggle:------10 Z: 1
+k[02] 32f2 fa04 8d14 2caa 
+c[02] 7e01 3d16 
+z[03] LFSR:---10110 toggle:------01 Z: 1
+k[03] fa04 8d14 2caa 2710 
+c[03] 3d16 bf65 
+z[04] LFSR:---01011 toggle:------10 Z: 0
+k[04] 8d14 2caa 2710 e812 
+c[04] bf65 4c19 
+z[05] LFSR:---00101 toggle:------01 Z: 0
+k[05] 2caa 2710 e812 09ac 
+c[05] 4c19 9eac 
+z[06] LFSR:---11010 toggle:------10 Z: 1
+k[06] 2710 e812 09ac d8bf 
+c[06] 9eac c20c 
+z[07] LFSR:---10101 toggle:------01 Z: 1
+k[07] e812 09ac d8bf 9f8e 
+c[07] c20c 0d11 
+z[08] LFSR:---10010 toggle:------10 Z: 1
+k[08] 09ac d8bf 9f8e 8609 
+c[08] 0d11 6041 
+z[09] LFSR:---01001 toggle:------01 Z: 0
+k[09] d8bf 9f8e 8609 b5c0 
+c[09] 6041 79d4 
+z[10] LFSR:---00100 toggle:------10 Z: 0
+k[10] 9f8e 8609 b5c0 f26a 
+c[10] 79d4 a552 
+z[11] LFSR:---00010 toggle:------01 Z: 0
+k[11] 8609 b5c0 f26a 438c 
+c[11] a552 edb7 
+z[12] LFSR:---00001 toggle:------10 Z: 0
+k[12] b5c0 f26a 438c 065b 
+c[12] edb7 86bb 
+z[13] LFSR:---11000 toggle:------01 Z: 1
+k[13] f26a 438c 065b 3e21 
+c[13] 86bb c07e 
+z[14] LFSR:---10100 toggle:------10 Z: 1
+k[14] 438c 065b 3e21 e0ef 
+c[14] c07e 676f 
+z[15] LFSR:---01010 toggle:------01 Z: 0
+k[15] 065b 3e21 e0ef 7c47 
+c[15] 676f 6fc2 
+z[16] LFSR:---11101 toggle:------10 Z: 1
+k[16] 3e21 e0ef 7c47 0fe5 
+c[16] 6fc2 1587 
+z[17] LFSR:---01110 toggle:------01 Z: 0
+k[17] e0ef 7c47 0fe5 4bd8 
+c[17] 1587 7102 
+z[18] LFSR:---11111 toggle:------10 Z: 1
+k[18] 7c47 0fe5 4bd8 e96b 
+c[18] 7102 3ae5 
+z[19] LFSR:---01111 toggle:------01 Z: 0
+k[19] 0fe5 4bd8 e96b 6f66 
+c[19] 3ae5 90fa 
+z[20] LFSR:---00111 toggle:------10 Z: 0
+k[20] 4bd8 e96b 6f66 250a 
+c[20] 90fa 7c95 
+z[21] LFSR:---11011 toggle:------01 Z: 1
+k[21] e96b 6f66 250a 4010 
+c[21] 7c95 b397 
+z[22] LFSR:---01101 toggle:------10 Z: 0
+k[22] 6f66 250a 4010 dd94 
+c[22] b397 687c 
+z[23] LFSR:---00110 toggle:------01 Z: 0
+k[23] 250a 4010 dd94 c535 
+c[23] 687c 873b 
+z[24] LFSR:---00011 toggle:------10 Z: 0
+k[24] 4010 dd94 c535 f15a 
+c[24] 873b 8fcf 
+z[25] LFSR:---11001 toggle:------01 Z: 1
+k[25] dd94 c535 f15a e070 
+c[25] 8fcf 57fa 
+z[26] LFSR:---01100 toggle:------10 Z: 0
+k[26] c535 f15a e070 56d4 
+c[26] 57fa 2ca6 
+z[27] LFSR:---11110 toggle:------01 Z: 1
+k[27] f15a e070 56d4 b649 
+c[27] 2ca6 5327 
+z[28] LFSR:---10111 toggle:------10 Z: 1
+k[28] e070 56d4 b649 71c3 
+c[28] 5327 37ba 
+z[29] LFSR:---10011 toggle:------01 Z: 1
+k[29] 56d4 b649 71c3 1918 
+c[29] 37ba bee3 
+z[30] LFSR:---10001 toggle:------10 Z: 1
+k[30] b649 71c3 1918 1110 
+c[30] bee3 bca2 
+z[31] LFSR:---10000 toggle:------01 Z: 1
+k[31] 71c3 1918 1110 0908 
+c[31] bca2 6565 
+z[32] LFSR:---01000 toggle:------10 Z: 0
+k[32] 1918 1110 0908 0100 
+c[32] 6565 6877 
