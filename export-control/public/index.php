@@ -16,6 +16,7 @@
 ********************************************/
 $g_contact_person="Brian Degnan";
 $g_contact_email="degs"."@"."ece".".gatech.edu";
+$g_contact_website="http://users.ece.gatech.edu/~degs/"
 
 //software information
 $g_softwarename="Simontool";
@@ -94,6 +95,8 @@ if((!isset($_COOKIE[$g_cookie_name]))&&($l_allclear==0)) {
 		 echo("If you believe that you are not in an embargoed State, please contact:<br />");
 		 echo($g_contact_person."<br />");
 		 echo($g_contact_email."<br />");
+		 echo($g_contact_website."<br />");
+		 
 		 exit(0);
 	 }else
 	 {  
@@ -109,6 +112,8 @@ if((!isset($_COOKIE[$g_cookie_name]))&&($l_allclear==0)) {
 	 <?php echo($g_softwaredescription); ?>
 	 <br /><br />
 	 The <?php echo($g_softwarename); ?> software is software that contains encryption, and the source code is freely available.  However, this software is still controlled by <a href="http://www.bis.doc.gov/index.php/forms-documents/doc_view/838-772">EAR 772.1</a>.  This webpage exists for compliance with <a href="https://www.bis.doc.gov/index.php/forms-documents/doc_view/320-76-fr-1059">15 CFR 732</a>.<br />
+	 <br />
+
 	 <br />
 	 <form action="<?php $_SERVER["SCRIPT_NAME"];?>" method="post"> 
     Do you confirm that you are not a citizen of an embargoed country (<?php echo($g_embargo_text)?>), or intend to export the software to an embargoed country?
