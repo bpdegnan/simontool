@@ -1,5 +1,4 @@
-# Copyright (C) 2015  Brian Degnan (http://users.ece.gatech.edu/~degs)
-# The Georgia Institute of Technology
+# Copyright (C) 2015-2016  Brian Degnan http://degnan68k.blogspot.com/
 # 
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
