@@ -78,7 +78,13 @@ LDFLAGS =  $(OPTIMIZATION)
 C_OBJECTS = main.o simon.o
 #C_OBJECTS = main_lfsr.o
 C_OBJECTS += arbitrary_register.o utilities.o 
-
+# This is for my internal version control, the external version may be different
+ifdef SVNREV
+$(warning )
+$(warning SVN revision is $(SVNREV), which will be out of date without a svn update)
+$(warning )
+CFLAGS += -DSVNREVISION=$(SVNREV)
+endif
 
 #-------------------------------------------------------------------------------
 #		Rules
@@ -119,4 +125,6 @@ clean:
 	-rm -f $(SRC)/*.s $(SRC)/*.i $(OBJ)/*.o $(BIN)/*.bin $(BIN)/*.elf
 	-rm -f *.s
 	-rm -f *.i
+	-rm -f log*
+	-rm -f *.tex
 

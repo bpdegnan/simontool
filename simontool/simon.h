@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 #define _SIMON_ARRAY_LENGTH 256 
+#define _SIMON_COMMAND_LENGTH 1024
 #define _SIMON_DEFAULT_VOLTAGE "3.3"
 #define SIMON_STROBE_OFF 0
 #define SIMON_STROBE_ON 0x00000001
@@ -40,8 +41,9 @@ typedef struct{
 	i32 debug_strobes;
 	
 	i32 filectl_latexoutput;  //to show if we generate a LaTeX output.
-	i32 experimental_keyschedulehash;
-	u32 simon_rounds;
+	i32 experimental_keyschedulehash;   
+	u32 simon_rounds;  //specify the number of rounds to run, even if it violate specification.
+	i32 experimental_printoutputs;
 	
 	//configuration 
 	u32 simon_configuration;
@@ -71,10 +73,15 @@ typedef struct{
 	u32 seq_Z;
 	u32 status_key_length;
 	u8 key_ascii[_SIMON_ARRAY_LENGTH];  //ascii representation of the key (later copied as bits arbreg)
-	u8 test_crypto_ascii[_SIMON_ARRAY_LENGTH];  //crypto in ascii, for testing.
+	u8 key_ascii_initial[_SIMON_ARRAY_LENGTH];  //ascii representation of the key (later copied as bits arbreg)
+	u8 key_ascii_final[_SIMON_ARRAY_LENGTH]; 
+	u8 crypto_ascii[_SIMON_ARRAY_LENGTH];  //crypto in ascii
+	u8 crypto_ascii_initial[_SIMON_ARRAY_LENGTH]; 
 	u8 logfile_ascii[_SIMON_ARRAY_LENGTH];
-	u8 latexfile_ascii[_SIMON_ARRAY_LENGTH];
+	u8 latexfile_key_ascii[_SIMON_ARRAY_LENGTH];
+	u8 latexfile_data_ascii[_SIMON_ARRAY_LENGTH];
 	u8 voltage_ascii[_SIMON_ARRAY_LENGTH];
+	u8 command_ascii[_SIMON_COMMAND_LENGTH];
 		
 }simoncipherconfig;
 
@@ -121,13 +128,16 @@ void simon_hardware_test_printcrypto();
 
 //these functions control the structure.
 void simon_set_key_ascii(const char *p_keystring);
-void simon_set_test_crypto_ascii(const char *p_cryptostring);
+void simon_set_crypto_ascii(const char *p_cryptostring);
 void simon_set_logfile_ascii(const char *p_logfile);
 void simon_set_latexfile_ascii(const char *p_latexfile);
 void simon_set_voltage_ascii(const char *p_voltage);
 
+//--Experimental or logging
 void simon_experimental_keyhash();  
 u32 simon_set_roundcount(u32 p_rounds);  //this is for experimentation
+void simon_set_cmdarg(const char *p_commandstring);
+i32 simon_set_printoutput();  //to modify the output format
 
 void simon_hardware_loadregfromASCII(arbitrary_register *p_arbreg,u8 *p_asciistring,u32 r_asciilen);
 

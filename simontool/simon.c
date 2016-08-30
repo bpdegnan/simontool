@@ -31,12 +31,16 @@ static arbitrary_register *p_hardware_cryptotext; //the encryption register
 
 static FILE *fp_logfile;
 static FILE *fp_strobefile;
-static FILE *fp_latexfile;   //latex file output
+static FILE *fp_latexfile_key;   //latex file output key image
+static FILE *fp_latexfile_data;   //latex file output data image
 
 static FILE *fp_clock;       //master clock
 static FILE *fp_lfsr;        //lfsr output
 static FILE *fp_toggle;      //toggle bit
 static FILE *fp_z;           //z sequence
+
+static FILE *fp_hash_k0;     //lowest bit of the key used for hash hardware
+//static FILE *fp_xor_result;  //the XOR result.
 
 static FILE *fp_key_bit;     //the output bit from the key register.
 static FILE *fp_key_mux1;    //the control for key mux 1
@@ -66,9 +70,6 @@ static FILE *fp_crypto_mux8; //the control for crypto mux 8
 //#define KEYBITFIELD
 //KEYBITFIELD generates a key bit field
 //this update is for the simonasahash paper and generates a TIKZ image.
-
-//#define KEYBITHARDCODE
-
 
 //#define MUXTESTS
 // MUXTESTS prints out the MUX control on a per-cycle basis.
@@ -108,6 +109,7 @@ simoncipherconfig* simon_create()
 	simonconfigptr->filectl_latexoutput = 0; //a zero disables LaTeX file generation
 	simonconfigptr->experimental_keyschedulehash = 0;  //researching into the key hash.
 	simonconfigptr->simon_rounds =0;
+	simonconfigptr->experimental_printoutputs=0; //to expand the printout
 	
     //program flow defaults
 	simonconfigptr->clock_number=0;  //number of times to clock the system, zero for infinite.
@@ -146,16 +148,20 @@ void simon_set_key_ascii(const char *p_keystring)
 {
     u32 l_strlen=strnlen(p_keystring,(_SIMON_ARRAY_LENGTH-1));
 	strncpy((char *)(simonconfigptr->key_ascii),p_keystring,l_strlen);
+	strncpy((char *)(simonconfigptr->key_ascii_initial),p_keystring,l_strlen+1);
+	//fprintf(stdout, "simon_set_key_ascii: %s \n",simonconfigptr->key_ascii);
+	
 }
 /*
-**  simon_set_test_crypto_ascii(const u8 *p_keystring)
+**  simon_set_crypto_ascii(const u8 *p_keystring)
 **  This function allows an ASCII string to be passed as a hexvalue to test
 **  a round of encryption. 
 */
-void simon_set_test_crypto_ascii(const char *p_cryptostring)
+void simon_set_crypto_ascii(const char *p_cryptostring)
 {
     u32 l_strlen=strnlen(p_cryptostring,(_SIMON_ARRAY_LENGTH-1));
-	strncpy((char *)(simonconfigptr->test_crypto_ascii),p_cryptostring,l_strlen);
+	strncpy((char *)(simonconfigptr->crypto_ascii),p_cryptostring,l_strlen);
+	strncpy((char *)(simonconfigptr->crypto_ascii_initial),p_cryptostring,l_strlen+1);
 }
 
 /*
@@ -193,14 +199,37 @@ void simon_set_logfile_ascii(const char *p_logfile)
 */
 void simon_set_latexfile_ascii(const char *p_latexfile)
 {
-	u32 l_strlen=strnlen(p_latexfile,(_SIMON_ARRAY_LENGTH-1));  //get the length, or one short of the max
+	//u32 l_strlen=strnlen(p_latexfile,(_SIMON_ARRAY_LENGTH-1));  //get the length, or one short of the max
 	simonconfigptr->filectl_latexoutput = 1;  //if this value is > 0, we write to the log
-	strncpy((char *)(simonconfigptr->latexfile_ascii),p_latexfile,l_strlen);
+	//strncpy((char *)(simonconfigptr->latexfile_ascii),p_latexfile,l_strlen);
+	sprintf((char *)(simonconfigptr->latexfile_key_ascii),"%s-key.tex",p_latexfile);
+	sprintf((char *)(simonconfigptr->latexfile_data_ascii),"%s-data.tex",p_latexfile);
+
 }
 
 /*
-**  simon_set_voltage_ascii(const u8 *p_logfile)
-**  Set the name of the logfile and enable output to the log
+**  simon_set_cmdarg(const char *p_commandstring)
+**  Copy the command argument to the simon strucutre.  THis helps with debugging.
+**
+*/
+void simon_set_cmdarg(const char *p_commandstring)
+{
+	u32 l_strlen=strnlen(p_commandstring,(_SIMON_COMMAND_LENGTH-1));  
+	strncpy((char *)(simonconfigptr->command_ascii),p_commandstring,l_strlen);
+}
+/*
+**  simon_set_printoutput()
+**  printoutput
+**
+*/
+i32 simon_set_printoutput()
+{
+	simonconfigptr->experimental_printoutputs = simonconfigptr->experimental_printoutputs +1;
+	return(simonconfigptr->experimental_printoutputs);
+}
+/*
+**  simon_set_voltage_ascii(const char *p_voltage)
+**  Set the voltage that will be output to the strobe file
 **
 */
 void simon_set_voltage_ascii(const char *p_voltage)
@@ -362,7 +391,7 @@ void simon_debug_printstructure(FILE *p_stream)
 	fprintf(p_stream,"  rounds_T =0x%08x (%i)\n",u32_tmp,u32_tmp);
 	
 	fprintf(p_stream,"  key[%lu]: %s \n",strlen((const char *)(simonconfigptr->key_ascii)),simonconfigptr->key_ascii);
-	fprintf(p_stream,"  text[%lu]: %s \n",strlen((const char *)(simonconfigptr->test_crypto_ascii)),simonconfigptr->test_crypto_ascii);
+	fprintf(p_stream,"  text[%lu]: %s \n",strlen((const char *)(simonconfigptr->crypto_ascii)),simonconfigptr->crypto_ascii);
 	fprintf(p_stream,"  logfile[%lu]: %s \n",strlen((const char *)(simonconfigptr->logfile_ascii)),simonconfigptr->logfile_ascii);
 	
 }
@@ -507,7 +536,8 @@ void simon_hardwarecreate()
 	}
 	if(simonconfigptr->filectl_latexoutput > 0)
 	{
-	   fp_latexfile=fopen((const char *)(simonconfigptr->latexfile_ascii),"w+");
+	   fp_latexfile_key=fopen((const char *)(simonconfigptr->latexfile_key_ascii),"w+");
+	   fp_latexfile_data=fopen((const char *)(simonconfigptr->latexfile_data_ascii),"w+");
 	}
 
 	
@@ -523,6 +553,8 @@ void simon_hardwarecreate()
 	  fp_key_mux1=fopen("key_mux1.pwl","w+");
 	  fp_key_mux3=fopen("key_mux3.pwl","w+");
 	  fp_key_mux4=fopen("key_mux4.pwl","w+");
+	  
+	  fp_hash_k0=fopen("keyreg0.pwl","w+");  //this is for the hash where we need key register bit 0
 	  
 	  fp_crypto_bit=fopen("crypto_bit.pwl","w+");
 	  fp_crypto_mux0=fopen("crypto_mux0.pwl","w+");
@@ -632,6 +664,7 @@ void simon_hardwaredestroy()
 
     if(simonconfigptr->debug_strobes && SIMON_STROBE_ON)
     {
+      fclose(fp_hash_k0);
     
       fclose(fp_key_bit);
 	  fclose(fp_key_mux1);
@@ -652,7 +685,8 @@ void simon_hardwaredestroy()
     
     if(simonconfigptr->filectl_latexoutput > 0)
 	{
-	   fclose(fp_latexfile);
+	   fclose(fp_latexfile_key);
+	   fclose(fp_latexfile_data);
 	}
 	if(simonconfigptr->debug_writetolog > 0)
 	{
@@ -711,11 +745,12 @@ u32 simon_hardware_getZ()
 		exit(0);
 	      break;
 	}
-	//modification for the key schedule hash
+	// modification for the key schedule hash
+	// from the -u option
 	if(simonconfigptr->experimental_keyschedulehash !=0)
 	{
-	   // l_z = 0;  //by hard coding l_z to 0, we successfully remove the lfsr hardware
-	   l_z =l_lfsr;
+	    //l_z = 0;  //by hard coding l_z to 0, we successfully remove the lfsr hardware
+	   l_z =l_togglebit;
 	}
 	
 	return(l_z);
@@ -855,7 +890,7 @@ void simon_hardware_blockreset()
 
 void simon_hardware_test_loadcrypto()
 {
-  simon_hardware_loadblockfromASCII(simonconfigptr->test_crypto_ascii);
+  simon_hardware_loadblockfromASCII(simonconfigptr->crypto_ascii);
   
 }
 
@@ -867,10 +902,36 @@ void simon_hardware_test_savecrypto()
 void simon_hardware_test_printcrypto()
 {
    i32 l_counter=0;
-   for(l_counter=0;l_counter<(simondataptr->simon_bytecount);l_counter++)
+   u32 l_debugformatting_size = 0;
+   
+   if(simonconfigptr->experimental_printoutputs!=0)
    {
-   		fprintf(stdout,"%02x",simondataptr->data_out[l_counter]);
-   }
+     //this is from the -y option.  You printout the key and data.  This is an easy way
+     //to see the expansion of the key schedule and data.  This is useful with the 
+     //LaTeX output for the key.  SVN 299 has this update.
+     //  ./bin/simontool.elf -e -b 32 -k 64 -s 19181110090805656877 -t 65656877 -y 
+     // yields
+     // key:  4d83 7db9 32f2 fa04 
+     // data: c69b e9bb 
+     // The key data is in the encryption loop
+     	
+        l_debugformatting_size = (simonconfigptr->derived_n)/(simonconfigptr->derived_m * 2);
+   		fprintf(stdout," key: ");
+        arbreg_debug_dumphexmod(stdout,p_hardware_key,l_debugformatting_size);
+   		fprintf(stdout,"\n");
+   		fprintf(stdout,"data: ");
+        arbreg_debug_dumphexmod(stdout,p_hardware_cryptotext,l_debugformatting_size);
+   		fprintf(stdout,"\n");
+
+   }else
+   {  //this is the standard output for a single entry such as:
+      // ./bin/simontool.elf -e -b 32 -k 64 -s 1918111009080100 -t 65656877
+      // will result in c69be9bb as an output.
+	   for(l_counter=0;l_counter<(simondataptr->simon_bytecount);l_counter++)
+	   {
+			fprintf(stdout,"%02x",simondataptr->data_out[l_counter]);
+	   }
+	}
 }
 
 /*
@@ -1337,16 +1398,24 @@ u8 simon_hardware_decryptkeyupdate()
     } 
 		//key_xor34 = bit3 ^ bit4;  //key_xor01 represents the tmp<-SR3 k[i-1], SR1 XOR tmp
 		k_bit_msb=arbreg_getbit(p_hardware_key,arbreg_getMSBindex(p_hardware_key));
-        //generate the logic in a style that uses the mux strobes
+
+		//**  IMPORTANT:
+        //**  The following generates the logic in a style that uses the mux strobes.
+        //**  This is one of the more important parts of the key expansion.
+        //**  The Z bit is ONLY used against the first bit of the cycle and then the  
+        //**  second cycle is XORd with just a 1      	 
       	if(simonconfigptr->generated_crypto_mux0==0)
-      	{  k_bit0 = simon_hardware_getZ() ^ 1;;
-      	}else
-      	{  k_bit0 = 1;  }
-      	if(simonconfigptr->generated_crypto_mux1==0)
-      	{   bit_feed = k_bit_msb ^ bit2 ^ bit3 ^ k_bit0;
-      	}else
-      	{   bit_feed = k_bit_msb ^ bit2 ^ bit3;
+      	{  k_bit0 = simon_hardware_getZ() ^ 1;;  
+      	}else{  
+      	    k_bit0 = 1;  
       	}
+      	if(simonconfigptr->generated_crypto_mux1==0){   
+      	    bit_feed = k_bit_msb ^ bit2 ^ bit3 ^ k_bit0;
+      	}else{   
+      	    bit_feed = k_bit_msb ^ bit2 ^ bit3;
+      	}
+      	
+      	
       	bit_feed = ~bit_feed;  //invert 
       	bit_feed = bit_feed & 0x01;
         /* The following block shows the key creation iteration and the mux position
@@ -1548,7 +1617,11 @@ void simon_hardwareclock()
       simon_pwl(fp_toggle,simon_hardware_gettoggle());
       simon_pwl(fp_z,simon_hardware_getZ());
 
-      simon_pwl(fp_key_bit,simonconfigptr->generated_key_bit); 
+	  //retrieve register bit zero
+	  simon_pwl(fp_hash_k0,simon_hardware_getK());
+
+      //
+      simon_pwl(fp_key_bit,(simonconfigptr->generated_key_bit)); 
       simon_pwl(fp_key_mux1,simonconfigptr->generated_key_mux1); 
       simon_pwl(fp_key_mux3,simonconfigptr->generated_key_mux3); 
       simon_pwl(fp_key_mux4,simonconfigptr->generated_key_mux4); 
@@ -1608,6 +1681,7 @@ void simon_encryptcore_serial()
 	u32 clock_max = simonconfigptr->clock_number;
 	u32 l_debugformatting_size = (simonconfigptr->derived_n)/(simonconfigptr->derived_m * 2);
 	u32 l_flag = 1;  //this variable is related the LaTeX code.  It's a flag or counter.
+	u32 clock_experimental=(simonconfigptr->derived_n) * (simonconfigptr->rounds_T)-simonconfigptr->rounds_T;
 	
 	simon_set_encrypt();  //Set the shared functions to use encryption routines.
 	
@@ -1619,7 +1693,7 @@ void simon_encryptcore_serial()
 	simon_hardware_loadregfromASCII(p_hardware_key,simonconfigptr->key_ascii,(simonconfigptr->derived_n)*(simonconfigptr->derived_m));
 	
 	//old: load the plain text from the ascii to the p_hardware_cryptotext
-    //	simon_hardware_loadregfromASCII(p_hardware_cryptotext,simonconfigptr->test_crypto_ascii,(simonconfigptr->derived_n)*2);	
+    //	simon_hardware_loadregfromASCII(p_hardware_cryptotext,simonconfigptr->crypto_ascii,(simonconfigptr->derived_n)*2);	
     
     //new: load the data_in into the crypto word, this means that data_in needs to be 
     // loaded before simon_encryptcore_serial is called. 
@@ -1671,59 +1745,41 @@ void simon_encryptcore_serial()
 	// I produce TizK code for the paper related to the key schedule.
 	if(simonconfigptr->filectl_latexoutput > 0)
 	{
+	  //  fprintf(stdout, "key as read: \n");
+	  //  arbreg_debug_dumphex(p_hardware_key);
+	//	fprintf(stdout, "\n");
 		// these are the preambles that I need for the LaTeX bit table.
-		fprintf(fp_latexfile,"%%WARNING: Automatically generated code.\n"); 
-		fprintf(fp_latexfile,"\\newcommand\\gridstep{0.1} %%you can change this to change space of rendering\n");
-		fprintf(fp_latexfile,"\\newcommand\\lineextstep{3} %%you can change this to make dividers longer\n");
-		fprintf(fp_latexfile,"\n\\newcommand\\bitfieldwidth{%i}\n\\newcommand\\kwidth{%i}\n\\newcommand\\numberofrounds{%i}\n\\newcommand\\km{%i}\n",simonconfigptr->derived_n * simonconfigptr->derived_m,simonconfigptr->derived_n,simonconfigptr->rounds_T,simonconfigptr->derived_m); 
-		fprintf(fp_latexfile,"\\begin{center}\n\\resizebox {\\columnwidth} {!} {\n"); 
-		fprintf(fp_latexfile,"\\begin{tikzpicture}\n"); 
-		fprintf(fp_latexfile,"\n\\def\\BITARRAY{%%\n"); 
+		fprintf(fp_latexfile_key,"%%WARNING: Automatically generated code.\n");
+		fprintf(fp_latexfile_key,"%% arguments: %s\n",simonconfigptr->command_ascii);
+		fprintf(fp_latexfile_key,"%% DEFINE THIS AT THE top:\n%%\\usepackage{tikz}\n%%\\usepackage{fp}\n%%\\usepackage{picture}\n%%\\newcommand{\\declarecommand}[1]{\\providecommand{#1}{}\\renewcommand{#1}} \n");
+		fprintf(fp_latexfile_key,"%%\n");
+		fprintf(fp_latexfile_key,"\\declarecommand\\gridstep{0.1} %%you can change this to change space of rendering\n");
+		fprintf(fp_latexfile_key,"\\declarecommand\\lineextstep{3} %%you can change this to make dividers longer\n");
+		fprintf(fp_latexfile_key,"\n\\declarecommand\\bitfieldwidth{%i}\n\\declarecommand\\kwidth{%i}\n\\declarecommand\\numberofrounds{%i}\n\\declarecommand\\km{%i}\n",simonconfigptr->derived_n * simonconfigptr->derived_m,simonconfigptr->derived_n,simonconfigptr->rounds_T,simonconfigptr->derived_m); 
+		fprintf(fp_latexfile_key,"\\begin{figure}[h] \n"); 
+		fprintf(fp_latexfile_key,"\\begin{center}\n\\resizebox {\\columnwidth} {!} {\n"); 
+		fprintf(fp_latexfile_key,"\\begin{tikzpicture}\n"); 
+		fprintf(fp_latexfile_key,"\n\\def\\BITARRAY{%%\n"); 
 
-/*
-		//print out the initial condition
-		l_flag=1;
-		if(clock_counter==(clock_max-simonconfigptr->derived_n))
-		{  l_flag=0; }  //this determines which terminator we use
-		//fprintf(stdout,"l_flag: %i\n",l_flag);
-		arbreg_debug_dumpbits_latexarray(fp_latexfile,p_hardware_key,l_flag);
-  */
+
+		fprintf(fp_latexfile_data,"%%WARNING: Automatically generated code.\n");
+		fprintf(fp_latexfile_data,"%% arguments: %s\n",simonconfigptr->command_ascii);
+		fprintf(fp_latexfile_data,"%% DEFINE THIS AT THE top:\n%%\\usepackage{tikz}\n%%\\usepackage{fp}\n%%\\usepackage{picture}\n%%\\newcommand{\\declarecommand}[1]{\\providecommand{#1}{}\\renewcommand{#1}} \n");
+		fprintf(fp_latexfile_data,"%%\n");
+		fprintf(fp_latexfile_data,"\\declarecommand\\gridstep{0.1} %%you can change this to change space of rendering\n");
+		fprintf(fp_latexfile_data,"\\declarecommand\\lineextstep{3} %%you can change this to make dividers longer\n");
+		fprintf(fp_latexfile_data,"\n\\declarecommand\\bitfieldwidth{%i}\n\\declarecommand\\kwidth{%i}\n\\declarecommand\\numberofrounds{%i}\n\\declarecommand\\km{%i}\n",simonconfigptr->derived_n * simonconfigptr->derived_m,simonconfigptr->derived_n,simonconfigptr->rounds_T,(simonconfigptr->derived_m)/2); 
+		fprintf(fp_latexfile_data,"\\begin{figure}[h] \n"); 
+		fprintf(fp_latexfile_data,"\\begin{center}\n\\resizebox {\\columnwidth} {!} {\n"); 
+		fprintf(fp_latexfile_data,"\\begin{tikzpicture}\n"); 
+		fprintf(fp_latexfile_data,"\n\\def\\BITARRAY{%%\n"); 
 
 	}	
-	
-	#ifdef KEYBITHARDCODE
-	 
-	 fprintf(stdout,"%%WARNING: Automatically generated code.\n"); 
-     fprintf(stdout,"%%be sure to include: \\usepackage{fp,tikz}\n"); 
-	 fprintf(stdout,"\n\\newcommand\\bitfieldwidth{%i}\n\\newcommand\\kwidth{%i}\n\\newcommand\\numberofrounds{%i}\n",simonconfigptr->derived_n * simonconfigptr->derived_m,simonconfigptr->derived_n,simonconfigptr->rounds_T);
-    
-    fprintf(stdout,"\\makeatletter\n"); 
-	fprintf(stdout,"%%divide the column width by the bitfield width to figure out how many boxes we need\n"); 
-    fprintf(stdout,"\\FPeval{\\blockwidth}{((\\strip@pt\\columnwidth) / \\bitfieldwidth)}\n"); 
-	fprintf(stdout,"%%truncate the decimals\n"); 
-	fprintf(stdout,"\\FPtrunc\\blockwidth{\\blockwidth}{0}\n"); 
-	fprintf(stdout,"%%get a whole number, but then truncate it anyway\n"); 
-	fprintf(stdout,"\\FPmul\\gridwidth{\\bitfieldwidth}{\\blockwidth}\n"); 
-	fprintf(stdout,"\\FPtrunc\\gridwidth{\\gridwidth}{0}\n"); 
-	fprintf(stdout,"\\FPmul\\gridheight{\\numberofrounds}{\\blockwidth}\n"); 
-	fprintf(stdout,"\\FPtrunc\\gridheight{\\gridheight}{0}\n"); 
-	fprintf(stdout,"\\makeatother\n"); 
-	fprintf(stdout,"\n"); 
-	fprintf(stdout,"%% this creates a box at the appropriate location\n"); 
-	fprintf(stdout,"%% It just uses the index and not a location, so it can scale with\n"); 
-	fprintf(stdout,"%% the type of grid width\n"); 
-	fprintf(stdout,"\\newcommand{\\gridbox}[2]{%%you pass the x,y of the lower location.\n"); 
-	fprintf(stdout,"\\fill [orange] (#1*\\blockwidth pt, -#2*\\blockwidth pt) rectangle ++(-\\blockwidth pt,\\blockwidth pt)}\n"); 
-	fprintf(stdout,"\n"); 
-	fprintf(stdout,"\\begin{tikzpicture}\n"); 
-	fprintf(stdout,"\\draw[step=\\blockwidth pt,gray,very thin] (0pt,0pt) grid (\\gridwidth pt,-\\gridheight pt);\n"); 
-    
-    
-    #endif	
-	//clock_counter iterates at a size of "n", so simon32/64 would be 16, which is "K_x" width
+
+	//clock_counter iterates as a bit-based step, so simon32/64 would be 512
 	for (clock_counter=0;clock_counter<clock_max;clock_counter++)
 	{
-		if(key_bitclock>=(simonconfigptr->derived_n))
+		if(key_bitclock>=(simonconfigptr->derived_n))  //roll over every "n" for the simon
         {
         	key_bitclock = 0;
         }
@@ -1777,7 +1833,7 @@ void simon_encryptcore_serial()
 	    fprintf(fp_logfile,"\\\\\n");
 #endif
 			}
-			
+	//this creates the "bit array" for LaTeX and we need the terminator of , or % depending on the last line 
 	if(simonconfigptr->filectl_latexoutput > 0)
 	{
 		//if we want the key bit field
@@ -1785,18 +1841,41 @@ void simon_encryptcore_serial()
 		if(clock_counter==(clock_max-simonconfigptr->derived_n))
 		{  l_flag=0; }  //this determines which terminator we use
 		//fprintf(stdout,"l_flag: %i\n",l_flag);
-		arbreg_debug_dumpbits_latexarray(fp_latexfile,p_hardware_key,l_flag);
+		//this first block of code is the key information for the latex output
+		arbreg_debug_dumpbits_latexarray(fp_latexfile_key,p_hardware_key,l_flag);  //the bit function
+		fprintf(fp_latexfile_key,"%%");
+		arbreg_debug_dumphexmod(fp_latexfile_key,p_hardware_key,l_debugformatting_size);
+		fprintf(fp_latexfile_key,"\n");
+			
+		//this block is the cryptotext output.	
+        arbreg_debug_dumpbits_latexarray(fp_latexfile_data,p_hardware_cryptotext,l_flag);  //the bit function
+		fprintf(fp_latexfile_data,"%%");
+		arbreg_debug_dumphexmod(fp_latexfile_data,p_hardware_cryptotext,l_debugformatting_size);
+		fprintf(fp_latexfile_data,"\n");
     }		
 	
-	#ifdef KEYBITHARDCODE
-     arbreg_debug_dumpbits_gridbox(stdout,p_hardware_key,l_flag);
-     fprintf(stdout,"\n");
-     l_flag++;
-	#endif
+			//due to how this code works simulating hardware, if you end up with
+			//a key error for printing, not encryption because it iterates an extra
+			//time, so need to put your key expansion output information before the
+			//final hardware clock statement.
+            //fprintf(stdout,"%02i: ",key_index);
+		    //arbreg_debug_dumphexmod(stdout,p_hardware_key,l_debugformatting_size);
+		   //fprintf(stdout,"\n");
 			
-			
+			if(clock_counter>clock_experimental)
+			{
+			if(simonconfigptr->experimental_printoutputs!=0)
+             {
+				 l_debugformatting_size = (simonconfigptr->derived_n)/(simonconfigptr->derived_m * 2);
+				 fprintf(stdout,"key: ");
+				 arbreg_debug_dumphexmod(stdout,p_hardware_key,l_debugformatting_size);
+				 //this ascii key is for the last key
+				 //arbreg_debug_dumphexmod((FILE *)(simonconfigptr->key_ascii_final),p_hardware_key,l_debugformatting_size);
+				 fprintf(stdout,"\n");
+			 }
+			}   
 			key_index++;
-       }
+       }  //end of if (key_bitclock==0)
         
       /******
       **  The following lines need work:
@@ -1817,43 +1896,104 @@ void simon_encryptcore_serial()
 	if(simonconfigptr->filectl_latexoutput > 0)
 	{
 		// these are the preambles that I need for the LaTeX bit table.
-		fprintf(fp_latexfile,"}\n"); 
-		fprintf(fp_latexfile,"\\fill[orange]\n"); 
-		fprintf(fp_latexfile,"\\foreach \\row [count=\\y] in \\BITARRAY {\n"); 
-		fprintf(fp_latexfile,"\\foreach \\cell [count=\\x] in \\row {\n"); 
-		fprintf(fp_latexfile,"\\ifnum\\cell=1 %%\n"); 
-		fprintf(fp_latexfile,"(\\x*\\gridstep-\\gridstep, -\\y*\\gridstep+\\gridstep) rectangle ++(\\gridstep, -\\gridstep)\n"); 
-		fprintf(fp_latexfile,"\\fi\n"); 
-		fprintf(fp_latexfile,"\\pgfextra{%%\n"); 
-		fprintf(fp_latexfile,"\\global\\let\\maxx\\x\n"); 
-		fprintf(fp_latexfile,"\\global\\let\\maxy\\y\n"); 
-		fprintf(fp_latexfile,"}%%\n"); 
-		fprintf(fp_latexfile,"}\n"); 
-		fprintf(fp_latexfile,"}\n"); 
-		fprintf(fp_latexfile,";\n"); 
-		fprintf(fp_latexfile,"\\draw[thin] (0, 0) grid[step=\\gridstep] (\\maxx*\\gridstep, -\\maxy*\\gridstep);\n"); 
-		fprintf(fp_latexfile,"\\foreach \\x in {0,...,\\km} {\n"); 
-		fprintf(fp_latexfile,"   \\pgfmathtruncatemacro{\\mk}{\\km-\\x-1} \n"); 
-		fprintf(fp_latexfile,"   \\draw (\\x*\\kwidth*\\gridstep,0) -- (\\x*\\kwidth*\\gridstep,\\gridstep*\\lineextstep);\n"); 
-		fprintf(fp_latexfile,"   \\ifnum\\x<\\km\n"); 
-		fprintf(fp_latexfile,"    \\node[above] at(\\x*\\kwidth*\\gridstep+\\kwidth*\\gridstep/2,0){\\small \\(K_{i+\\mk}\\)};\n"); 
-		fprintf(fp_latexfile,"	\\fi\n"); 
-		fprintf(fp_latexfile,"}\n"); 
-		fprintf(fp_latexfile,"\\draw (0,0) -- (-\\gridstep*\\lineextstep,0);\n"); 
-		fprintf(fp_latexfile,"\\draw (0,-\\maxy*\\gridstep) -- (-\\gridstep*\\lineextstep,-\\maxy*\\gridstep);\n"); 
-		fprintf(fp_latexfile,"\\node at(-\\gridstep*\\lineextstep,-\\gridstep*\\lineextstep/2){\\small 0};\n"); 
-		fprintf(fp_latexfile,"\\node at(-\\gridstep*\\lineextstep,-\\maxy*\\gridstep+\\gridstep*\\lineextstep/2){\\small \\numberofrounds};\n"); 
-		fprintf(fp_latexfile,"\\node[rotate=90] at(-\\gridstep*\\lineextstep,-\\maxy*\\gridstep/2){\\small rounds};\n"); 
+		fprintf(fp_latexfile_key,"}\n"); 
+		fprintf(fp_latexfile_key,"\\fill[teal]\n"); 
+		fprintf(fp_latexfile_key,"\\foreach \\row [count=\\y] in \\BITARRAY {\n"); 
+		fprintf(fp_latexfile_key,"\\foreach \\cell [count=\\x] in \\row {\n"); 
+		fprintf(fp_latexfile_key,"  \\ifnum\\cell=0 %%\n"); 
+		fprintf(fp_latexfile_key,"    (\\x*\\gridstep-\\gridstep, -\\y*\\gridstep+\\gridstep) rectangle ++(\\gridstep, -\\gridstep)\n"); 
+		fprintf(fp_latexfile_key,"  \\fi\n"); 
+		fprintf(fp_latexfile_key,"  \\pgfextra{%%\n"); 
+		fprintf(fp_latexfile_key,"    \\global\\let\\maxx\\x\n"); 
+		fprintf(fp_latexfile_key,"    \\global\\let\\maxy\\y\n"); 
+		fprintf(fp_latexfile_key,"    }%%\n"); 
+		fprintf(fp_latexfile_key,"  }\n"); 
+		fprintf(fp_latexfile_key,"}\n"); 
+		fprintf(fp_latexfile_key,"; %% now we do the grid\n"); 
+		fprintf(fp_latexfile_key,"\\draw[thin] (0, 0) grid[step=\\gridstep] (\\maxx*\\gridstep, -\\maxy*\\gridstep);\n"); 
+		fprintf(fp_latexfile_key,"\\foreach \\x in {0,...,\\km} { %%loop stepping m times via km\n"); 
+		fprintf(fp_latexfile_key,"   \\pgfmathtruncatemacro{\\mk}{\\km-\\x-1} \n"); 
+		fprintf(fp_latexfile_key,"   \\draw (\\x*\\kwidth*\\gridstep,0) -- (\\x*\\kwidth*\\gridstep,\\gridstep*\\lineextstep); %%top ticks\n"); 
+		fprintf(fp_latexfile_key,"   \\draw (\\x*\\kwidth*\\gridstep,-\\maxy*\\gridstep) -- (\\x*\\kwidth*\\gridstep,-\\maxy*\\gridstep-\\gridstep); %%bottom ticks\n"); 
+
+		fprintf(fp_latexfile_key,"   \\ifnum\\x<\\km\n"); 
+		fprintf(fp_latexfile_key,"    \\node[above] at(\\x*\\kwidth*\\gridstep+\\kwidth*\\gridstep/2,0){\\small \\(K_{i+\\mk}\\)};\n"); 
+		fprintf(fp_latexfile_key,"	\\fi\n"); 
+		fprintf(fp_latexfile_key,"}\n"); 
+		fprintf(fp_latexfile_key,"\\draw (0,0) -- (-\\gridstep*\\lineextstep,0);\n"); 
+		fprintf(fp_latexfile_key,"\\draw (0,-\\maxy*\\gridstep) -- (-\\gridstep*\\lineextstep,-\\maxy*\\gridstep);\n"); 
+		fprintf(fp_latexfile_key,"\\node at(-\\gridstep*\\lineextstep,-\\gridstep*\\lineextstep/2){\\small 0};\n"); 
+		fprintf(fp_latexfile_key,"\\node at(-\\gridstep*\\lineextstep,-\\maxy*\\gridstep+\\gridstep*\\lineextstep/2){\\small \\numberofrounds};\n"); 
+		fprintf(fp_latexfile_key,"\\node[rotate=90] at(-\\gridstep*\\lineextstep,-\\maxy*\\gridstep/2){\\small rounds};\n"); 
 		
-		fprintf(fp_latexfile,"\\end{tikzpicture}\n"); 
-		fprintf(fp_latexfile,"}%%end resizebox \n"); 
-		fprintf(fp_latexfile,"\\end{center}%%end center \n"); 
-		fprintf(fp_latexfile,"%% END autogeneratedcode\n"); 
+		fprintf(fp_latexfile_key,"%%this creates the sidebar ticks\n");
+		fprintf(fp_latexfile_key,"\\foreach \\itick in {0,...,\\maxy}{\n"); 
+		fprintf(fp_latexfile_key,"	 \\pgfmathparse{int(mod(\\itick,10))} \n"); 
+		fprintf(fp_latexfile_key,"	 \\ifnum\\pgfmathresult<1\n"); 
+		fprintf(fp_latexfile_key,"	    \\draw (0,-\\itick*\\gridstep) -- (-\\gridstep*\\lineextstep/3,-\\itick*\\gridstep);\n"); 
+		fprintf(fp_latexfile_key,"	 \\fi\n"); 
+		fprintf(fp_latexfile_key,"}\n"); 
+
+		
+		
+		fprintf(fp_latexfile_key,"\\end{tikzpicture}\n"); 
+		fprintf(fp_latexfile_key,"}%%end resizebox \n"); 
+		fprintf(fp_latexfile_key,"\\end{center}%%end center \n"); 
+		fprintf(fp_latexfile_key,"\\caption{The bit field for the key expansion of %s for SIMON%i/%i where a white square is a 1 and a filled square is a 0.}\n",simonconfigptr->key_ascii_initial,simonconfigptr->derived_n * 2,simonconfigptr->derived_n * simonconfigptr->derived_m); 
+		fprintf(fp_latexfile_key,"\\end{figure}%%end figure \n"); 
+		fprintf(fp_latexfile_key,"%% END autogeneratedcode\n"); 
+
+
+		// these are the preambles that I need for the LaTeX bit table.
+		fprintf(fp_latexfile_data,"}\n"); 
+		fprintf(fp_latexfile_data,"\\fill[orange]\n"); 
+		fprintf(fp_latexfile_data,"\\foreach \\row [count=\\y] in \\BITARRAY {\n"); 
+		fprintf(fp_latexfile_data,"\\foreach \\cell [count=\\x] in \\row {\n"); 
+		fprintf(fp_latexfile_data,"  \\ifnum\\cell=0 %%\n"); 
+		fprintf(fp_latexfile_data,"    (\\x*\\gridstep-\\gridstep, -\\y*\\gridstep+\\gridstep) rectangle ++(\\gridstep, -\\gridstep)\n"); 
+		fprintf(fp_latexfile_data,"  \\fi\n"); 
+		fprintf(fp_latexfile_data,"  \\pgfextra{%%\n"); 
+		fprintf(fp_latexfile_data,"    \\global\\let\\maxx\\x\n"); 
+		fprintf(fp_latexfile_data,"    \\global\\let\\maxy\\y\n"); 
+		fprintf(fp_latexfile_data,"    }%%\n"); 
+		fprintf(fp_latexfile_data,"  }\n"); 
+		fprintf(fp_latexfile_data,"}\n"); 
+		fprintf(fp_latexfile_data,"; %% now we do the grid\n"); 
+		fprintf(fp_latexfile_data,"\\draw[thin] (0, 0) grid[step=\\gridstep] (\\maxx*\\gridstep, -\\maxy*\\gridstep);\n"); 
+		fprintf(fp_latexfile_data,"\\foreach \\x in {0,...,\\km} { %%loop stepping m times via km\n"); 
+		fprintf(fp_latexfile_data,"   \\pgfmathtruncatemacro{\\mk}{\\km-\\x-1} \n"); 
+		fprintf(fp_latexfile_data,"   \\draw (\\x*\\kwidth*\\gridstep,0) -- (\\x*\\kwidth*\\gridstep,\\gridstep*\\lineextstep); %%top ticks\n"); 
+		fprintf(fp_latexfile_data,"   \\draw (\\x*\\kwidth*\\gridstep,-\\maxy*\\gridstep) -- (\\x*\\kwidth*\\gridstep,-\\maxy*\\gridstep-\\gridstep); %%bottom ticks\n"); 
+
+		fprintf(fp_latexfile_data,"   \\ifnum\\x<\\km\n"); 
+		//the following line has the header text
+		fprintf(fp_latexfile_data,"    \\node[above] at(\\x*\\kwidth*\\gridstep+\\kwidth*\\gridstep/2,0){\\small \\(X_{i+\\mk}\\)};\n"); 
+		fprintf(fp_latexfile_data,"	\\fi\n"); 
+		fprintf(fp_latexfile_data,"}\n"); 
+		fprintf(fp_latexfile_data,"\\draw (0,0) -- (-\\gridstep*\\lineextstep,0);\n"); 
+		fprintf(fp_latexfile_data,"\\draw (0,-\\maxy*\\gridstep) -- (-\\gridstep*\\lineextstep,-\\maxy*\\gridstep);\n"); 
+		fprintf(fp_latexfile_data,"\\node at(-\\gridstep*\\lineextstep,-\\gridstep*\\lineextstep/2){\\small 0};\n"); 
+		fprintf(fp_latexfile_data,"\\node at(-\\gridstep*\\lineextstep,-\\maxy*\\gridstep+\\gridstep*\\lineextstep/2){\\small \\numberofrounds};\n"); 
+		fprintf(fp_latexfile_data,"\\node[rotate=90] at(-\\gridstep*\\lineextstep,-\\maxy*\\gridstep/2){\\small rounds};\n"); 
+		
+		fprintf(fp_latexfile_data,"%%this creates the sidebar ticks\n");
+		fprintf(fp_latexfile_data,"\\foreach \\itick in {0,...,\\maxy}{\n"); 
+		fprintf(fp_latexfile_data,"	 \\pgfmathparse{int(mod(\\itick,10))} \n"); 
+		fprintf(fp_latexfile_data,"	 \\ifnum\\pgfmathresult<1\n"); 
+		fprintf(fp_latexfile_data,"	    \\draw (0,-\\itick*\\gridstep) -- (-\\gridstep*\\lineextstep/3,-\\itick*\\gridstep);\n"); 
+		fprintf(fp_latexfile_data,"	 \\fi\n"); 
+		fprintf(fp_latexfile_data,"}\n"); 
+		
+		fprintf(fp_latexfile_data,"\\end{tikzpicture}\n"); 
+		fprintf(fp_latexfile_data,"}%%end resizebox \n"); 
+		fprintf(fp_latexfile_data,"\\end{center}%%end center \n"); 
+		fprintf(fp_latexfile_data,"\\caption{The bit field with the cryptotext of %s for SIMON%i/%i where a white square is a 1 and a filled square is a 0.}\n",simonconfigptr->crypto_ascii_initial,simonconfigptr->derived_n * 2,simonconfigptr->derived_n * simonconfigptr->derived_m); 
+		fprintf(fp_latexfile_data,"\\end{figure}%%end figure \n");
+		fprintf(fp_latexfile_data,"%% END autogeneratedcode\n"); 
+
+
 	}	
 	
-	#ifdef KEYBITHARDCODE
-	fprintf(stdout,"\\end{tikzpicture}\n");
-	#endif
 	/******
 	**  The rounds are done at this point, so you can print the result or copy it to
 	**  the array to send data out.
@@ -1971,6 +2111,8 @@ void simon_decryptcore_serial()
 	u32 clock_counter = 0;
 	u32 clock_max = simonconfigptr->clock_number;
 	u32 l_debugformatting_size = (simonconfigptr->derived_n)/(simonconfigptr->derived_m * 2);
+	u32 l_flag = 1;  //this variable is related the LaTeX code.  It's a flag or counter.
+
 
 	simon_set_decrypt();  //make sure the shared functions are in the correct mode.
 	
@@ -2046,6 +2188,40 @@ void simon_decryptcore_serial()
     if(clock_max==0){
        clock_max=(simonconfigptr->derived_n) * (simonconfigptr->rounds_T);  //the "base" number of ticks
     }
+ 
+ 	if(simonconfigptr->filectl_latexoutput > 0)
+	{
+	  //  fprintf(stdout, "key as read: \n");
+	  //  arbreg_debug_dumphex(p_hardware_key);
+	//	fprintf(stdout, "\n");
+		// these are the preambles that I need for the LaTeX bit table.
+		fprintf(fp_latexfile_key,"%%WARNING: Automatically generated code for decryption.\n");
+		fprintf(fp_latexfile_key,"%% arguments: %s\n",simonconfigptr->command_ascii);
+		fprintf(fp_latexfile_key,"%% DEFINE THIS AT THE top:\n%%\\usepackage{tikz}\n%%\\usepackage{fp}\n%%\\usepackage{picture}\n%%\\newcommand{\\declarecommand}[1]{\\providecommand{#1}{}\\renewcommand{#1}} \n");
+		fprintf(fp_latexfile_key,"%%\n");
+		fprintf(fp_latexfile_key,"\\declarecommand\\gridstep{0.1} %%you can change this to change space of rendering\n");
+		fprintf(fp_latexfile_key,"\\declarecommand\\lineextstep{3} %%you can change this to make dividers longer\n");
+		fprintf(fp_latexfile_key,"\n\\declarecommand\\bitfieldwidth{%i}\n\\declarecommand\\kwidth{%i}\n\\declarecommand\\numberofrounds{%i}\n\\declarecommand\\km{%i}\n",simonconfigptr->derived_n * simonconfigptr->derived_m,simonconfigptr->derived_n,simonconfigptr->rounds_T,simonconfigptr->derived_m); 
+		fprintf(fp_latexfile_key,"\\begin{figure}[h] \n"); 
+		fprintf(fp_latexfile_key,"\\begin{center}\n\\resizebox {\\columnwidth} {!} {\n"); 
+		fprintf(fp_latexfile_key,"\\begin{tikzpicture}\n"); 
+		fprintf(fp_latexfile_key,"\n\\def\\BITARRAY{%%\n"); 
+
+
+		fprintf(fp_latexfile_data,"%%WARNING: Automatically generated code for decryption.\n");
+		fprintf(fp_latexfile_data,"%% arguments: %s\n",simonconfigptr->command_ascii);
+		fprintf(fp_latexfile_data,"%% DEFINE THIS AT THE top:\n%%\\usepackage{tikz}\n%%\\usepackage{fp}\n%%\\usepackage{picture}\n%%\\newcommand{\\declarecommand}[1]{\\providecommand{#1}{}\\renewcommand{#1}} \n");
+		fprintf(fp_latexfile_data,"%%\n");
+		fprintf(fp_latexfile_data,"\\declarecommand\\gridstep{0.1} %%you can change this to change space of rendering\n");
+		fprintf(fp_latexfile_data,"\\declarecommand\\lineextstep{3} %%you can change this to make dividers longer\n");
+		fprintf(fp_latexfile_data,"\n\\declarecommand\\bitfieldwidth{%i}\n\\declarecommand\\kwidth{%i}\n\\declarecommand\\numberofrounds{%i}\n\\declarecommand\\km{%i}\n",simonconfigptr->derived_n * simonconfigptr->derived_m,simonconfigptr->derived_n,simonconfigptr->rounds_T,(simonconfigptr->derived_m)); 
+		fprintf(fp_latexfile_data,"\\begin{figure}[h] \n"); 
+		fprintf(fp_latexfile_data,"\\begin{center}\n\\resizebox {\\columnwidth} {!} {\n"); 
+		fprintf(fp_latexfile_data,"\\begin{tikzpicture}\n"); 
+		fprintf(fp_latexfile_data,"\n\\def\\BITARRAY{%%\n"); 
+
+	}	   
+    
     for (clock_counter=0;clock_counter<clock_max;clock_counter++)
 	{
 		if(key_bitclock>=(simonconfigptr->derived_n))
@@ -2073,12 +2249,46 @@ void simon_decryptcore_serial()
 			   arbreg_debug_dumphexmod(fp_logfile,p_hardware_cryptotext,l_debugformatting_size);
 			   fprintf(fp_logfile,"\n");
 			}
+			
+			
+			
 		//TEMPORARY debug output
 		 ///if((simonconfigptr->clock_count)%u32_n ==0)	
 		 // fprintf(stdout, "z[%02i] ",key_index);	
 	     // arbreg_debug_dumpbits(stdout,p_hardware_LFSR,1);
-	     
-		//	
+        
+    if(simonconfigptr->filectl_latexoutput > 0)
+	{
+		//if we want the key bit field
+		l_flag=1;
+		if(clock_counter==(clock_max-simonconfigptr->derived_n))
+		{  l_flag=0; }  //this determines which terminator we use
+		//fprintf(stdout,"l_flag: %i\n",l_flag);
+		//this first block of code is the key information for the latex output
+		arbreg_debug_dumpbits_latexarray(fp_latexfile_key,p_hardware_key,l_flag);  //the bit function
+		fprintf(fp_latexfile_key,"%%");
+		arbreg_debug_dumphexmod(fp_latexfile_key,p_hardware_key,l_debugformatting_size);
+		fprintf(fp_latexfile_key,"\n");
+			
+		//this block is the cryptotext output.	
+        arbreg_debug_dumpbits_latexarray(fp_latexfile_data,p_hardware_cryptotext,l_flag);  //the bit function
+		fprintf(fp_latexfile_data,"%%");
+		arbreg_debug_dumphexmod(fp_latexfile_data,p_hardware_cryptotext,l_debugformatting_size);
+		fprintf(fp_latexfile_data,"\n");
+    }	
+           
+           //please see notes in encryption code
+
+			if(simonconfigptr->experimental_printoutputs!=0)
+             {
+				 l_debugformatting_size = (simonconfigptr->derived_n)/(simonconfigptr->derived_m * 2);
+				 fprintf(stdout,"key: ");
+				 arbreg_debug_dumphexmod(stdout,p_hardware_key,l_debugformatting_size);
+				 //this ascii key is for the last key
+				 //arbreg_debug_dumphexmod((FILE *)(simonconfigptr->key_ascii_final),p_hardware_key,l_debugformatting_size);
+				 fprintf(stdout,"\n");
+			 }
+		
 			key_index++;		
        }
        
@@ -2090,6 +2300,109 @@ void simon_decryptcore_serial()
 	}
 	// fprintf(stdout, "z[%02i] ",key_index);	
 	// arbreg_debug_dumpbits(stdout,p_hardware_LFSR,1);
+ 
+ 	if(simonconfigptr->filectl_latexoutput > 0)
+	{
+		// these are the preambles that I need for the LaTeX bit table.
+		fprintf(fp_latexfile_key,"}\n"); 
+		fprintf(fp_latexfile_key,"\\fill[magenta]\n"); 
+		fprintf(fp_latexfile_key,"\\foreach \\row [count=\\y] in \\BITARRAY {\n"); 
+		fprintf(fp_latexfile_key,"\\foreach \\cell [count=\\x] in \\row {\n"); 
+		fprintf(fp_latexfile_key,"  \\ifnum\\cell=0 %%\n"); 
+		fprintf(fp_latexfile_key,"    (\\x*\\gridstep-\\gridstep, -\\y*\\gridstep+\\gridstep) rectangle ++(\\gridstep, -\\gridstep)\n"); 
+		fprintf(fp_latexfile_key,"  \\fi\n"); 
+		fprintf(fp_latexfile_key,"  \\pgfextra{%%\n"); 
+		fprintf(fp_latexfile_key,"    \\global\\let\\maxx\\x\n"); 
+		fprintf(fp_latexfile_key,"    \\global\\let\\maxy\\y\n"); 
+		fprintf(fp_latexfile_key,"    }%%\n"); 
+		fprintf(fp_latexfile_key,"  }\n"); 
+		fprintf(fp_latexfile_key,"}\n"); 
+		fprintf(fp_latexfile_key,"; %% now we do the grid\n"); 
+		fprintf(fp_latexfile_key,"\\draw[thin] (0, 0) grid[step=\\gridstep] (\\maxx*\\gridstep, -\\maxy*\\gridstep);\n"); 
+		fprintf(fp_latexfile_key,"\\foreach \\x in {0,...,\\km} { %%loop stepping m times via km\n"); 
+		fprintf(fp_latexfile_key,"   \\pgfmathtruncatemacro{\\mk}{\\km-\\x-1} \n"); 
+		fprintf(fp_latexfile_key,"   \\draw (\\x*\\kwidth*\\gridstep,0) -- (\\x*\\kwidth*\\gridstep,\\gridstep*\\lineextstep); %%top ticks\n"); 
+		fprintf(fp_latexfile_key,"   \\draw (\\x*\\kwidth*\\gridstep,-\\maxy*\\gridstep) -- (\\x*\\kwidth*\\gridstep,-\\maxy*\\gridstep-\\gridstep); %%bottom ticks\n"); 
+
+		fprintf(fp_latexfile_key,"   \\ifnum\\x<\\km\n"); 
+		fprintf(fp_latexfile_key,"    \\node[above] at(\\x*\\kwidth*\\gridstep+\\kwidth*\\gridstep/2,0){\\small \\(K_{i+\\mk}\\)};\n"); 
+		fprintf(fp_latexfile_key,"	\\fi\n"); 
+		fprintf(fp_latexfile_key,"}\n"); 
+		fprintf(fp_latexfile_key,"\\draw (0,0) -- (-\\gridstep*\\lineextstep,0);\n"); 
+		fprintf(fp_latexfile_key,"\\draw (0,-\\maxy*\\gridstep) -- (-\\gridstep*\\lineextstep,-\\maxy*\\gridstep);\n"); 
+		fprintf(fp_latexfile_key,"\\node at(-\\gridstep*\\lineextstep,-\\gridstep*\\lineextstep/2){\\small 0};\n"); 
+		fprintf(fp_latexfile_key,"\\node at(-\\gridstep*\\lineextstep,-\\maxy*\\gridstep+\\gridstep*\\lineextstep/2){\\small \\numberofrounds};\n"); 
+		fprintf(fp_latexfile_key,"\\node[rotate=90] at(-\\gridstep*\\lineextstep,-\\maxy*\\gridstep/2){\\small rounds};\n"); 
+		
+		fprintf(fp_latexfile_key,"%%this creates the sidebar ticks\n");
+		fprintf(fp_latexfile_key,"\\foreach \\itick in {0,...,\\maxy}{\n"); 
+		fprintf(fp_latexfile_key,"	 \\pgfmathparse{int(mod(\\itick,10))} \n"); 
+		fprintf(fp_latexfile_key,"	 \\ifnum\\pgfmathresult<1\n"); 
+		fprintf(fp_latexfile_key,"	    \\draw (0,-\\itick*\\gridstep) -- (-\\gridstep*\\lineextstep/3,-\\itick*\\gridstep);\n"); 
+		fprintf(fp_latexfile_key,"	 \\fi\n"); 
+		fprintf(fp_latexfile_key,"}\n"); 
+
+		
+		
+		fprintf(fp_latexfile_key,"\\end{tikzpicture}\n"); 
+		fprintf(fp_latexfile_key,"}%%end resizebox \n"); 
+		fprintf(fp_latexfile_key,"\\end{center}%%end center \n"); 
+		fprintf(fp_latexfile_key,"\\caption{The bit field for the key expansion of %s for SIMON%i/%i where a white square is a 1 and a filled square is a 0.}\n",simonconfigptr->key_ascii_initial,simonconfigptr->derived_n * 2,simonconfigptr->derived_n * simonconfigptr->derived_m); 
+		fprintf(fp_latexfile_key,"\\end{figure}%%end figure \n"); 
+		fprintf(fp_latexfile_key,"%% END autogeneratedcode\n"); 
+
+
+		// these are the preambles that I need for the LaTeX bit table.
+		fprintf(fp_latexfile_data,"}\n"); 
+		fprintf(fp_latexfile_data,"\\fill[violet]\n"); 
+		fprintf(fp_latexfile_data,"\\foreach \\row [count=\\y] in \\BITARRAY {\n"); 
+		fprintf(fp_latexfile_data,"\\foreach \\cell [count=\\x] in \\row {\n"); 
+		fprintf(fp_latexfile_data,"  \\ifnum\\cell=0 %%\n"); 
+		fprintf(fp_latexfile_data,"    (\\x*\\gridstep-\\gridstep, -\\y*\\gridstep+\\gridstep) rectangle ++(\\gridstep, -\\gridstep)\n"); 
+		fprintf(fp_latexfile_data,"  \\fi\n"); 
+		fprintf(fp_latexfile_data,"  \\pgfextra{%%\n"); 
+		fprintf(fp_latexfile_data,"    \\global\\let\\maxx\\x\n"); 
+		fprintf(fp_latexfile_data,"    \\global\\let\\maxy\\y\n"); 
+		fprintf(fp_latexfile_data,"    }%%\n"); 
+		fprintf(fp_latexfile_data,"  }\n"); 
+		fprintf(fp_latexfile_data,"}\n"); 
+		fprintf(fp_latexfile_data,"; %% now we do the grid\n"); 
+		fprintf(fp_latexfile_data,"\\draw[thin] (0, 0) grid[step=\\gridstep] (\\maxx*\\gridstep, -\\maxy*\\gridstep);\n"); 
+		fprintf(fp_latexfile_data,"\\foreach \\x in {0,...,\\km} { %%loop stepping m times via km\n"); 
+		fprintf(fp_latexfile_data,"   \\pgfmathtruncatemacro{\\mk}{\\km-\\x-1} \n"); 
+		fprintf(fp_latexfile_data,"   \\draw (\\x*\\kwidth*\\gridstep,0) -- (\\x*\\kwidth*\\gridstep,\\gridstep*\\lineextstep); %%top ticks\n"); 
+		fprintf(fp_latexfile_data,"   \\draw (\\x*\\kwidth*\\gridstep,-\\maxy*\\gridstep) -- (\\x*\\kwidth*\\gridstep,-\\maxy*\\gridstep-\\gridstep); %%bottom ticks\n"); 
+
+		fprintf(fp_latexfile_data,"   \\ifnum\\x<\\km\n"); 
+		//the following line has the header text
+		fprintf(fp_latexfile_data,"    \\node[above] at(\\x*\\kwidth*\\gridstep+\\kwidth*\\gridstep/2,0){\\small \\(X_{i+\\mk}\\)};\n"); 
+		fprintf(fp_latexfile_data,"	\\fi\n"); 
+		fprintf(fp_latexfile_data,"}\n"); 
+		fprintf(fp_latexfile_data,"\\draw (0,0) -- (-\\gridstep*\\lineextstep,0);\n"); 
+		fprintf(fp_latexfile_data,"\\draw (0,-\\maxy*\\gridstep) -- (-\\gridstep*\\lineextstep,-\\maxy*\\gridstep);\n"); 
+		fprintf(fp_latexfile_data,"\\node at(-\\gridstep*\\lineextstep,-\\gridstep*\\lineextstep/2){\\small 0};\n"); 
+		fprintf(fp_latexfile_data,"\\node at(-\\gridstep*\\lineextstep,-\\maxy*\\gridstep+\\gridstep*\\lineextstep/2){\\small \\numberofrounds};\n"); 
+		fprintf(fp_latexfile_data,"\\node[rotate=90] at(-\\gridstep*\\lineextstep,-\\maxy*\\gridstep/2){\\small rounds};\n"); 
+		
+		fprintf(fp_latexfile_data,"%%this creates the sidebar ticks\n");
+		fprintf(fp_latexfile_data,"\\foreach \\itick in {0,...,\\maxy}{\n"); 
+		fprintf(fp_latexfile_data,"	 \\pgfmathparse{int(mod(\\itick,10))} \n"); 
+		fprintf(fp_latexfile_data,"	 \\ifnum\\pgfmathresult<1\n"); 
+		fprintf(fp_latexfile_data,"	    \\draw (0,-\\itick*\\gridstep) -- (-\\gridstep*\\lineextstep/3,-\\itick*\\gridstep);\n"); 
+		fprintf(fp_latexfile_data,"	 \\fi\n"); 
+		fprintf(fp_latexfile_data,"}\n"); 
+		
+		fprintf(fp_latexfile_data,"\\end{tikzpicture}\n"); 
+		fprintf(fp_latexfile_data,"}%%end resizebox \n"); 
+		fprintf(fp_latexfile_data,"\\end{center}%%end center \n"); 
+		fprintf(fp_latexfile_data,"\\caption{The bit field with the cryptotext of %s for SIMON%i/%i where a white square is a 1 and a filled square is a 0.}\n",simonconfigptr->crypto_ascii_initial,simonconfigptr->derived_n * 2,simonconfigptr->derived_n * simonconfigptr->derived_m); 
+		fprintf(fp_latexfile_data,"\\end{figure}%%end figure \n");
+		fprintf(fp_latexfile_data,"%% END autogeneratedcode\n"); 
+
+
+	}	
+
+ 
     
     arbreg_arraycopy(p_hardware_cryptotext, simondataptr->data_out);  //copy the output to the array
 

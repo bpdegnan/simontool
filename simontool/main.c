@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "simon.h"
 
 #define _BUILD_MAIN
-static const u32 prog_version=0x00010001;
+static const u32 prog_version=0x00010002;
 
 /*
 
@@ -71,7 +71,11 @@ Ciphertext: 8d2b5579afc8a3a0 3bf72a87efe7b868
 
 int version()
 {	
-	fprintf(stdout,"simontool version: %i.%i.%i\n\n", (prog_version >> 16)&0x0000ffff, (prog_version >> 8)&0x000000ff,(prog_version >> 0)&0x000000ff);
+	fprintf(stdout,"simontool\nversion: %i.%i.%i\n", (prog_version >> 16)&0x0000ffff, (prog_version >> 8)&0x000000ff,(prog_version >> 0)&0x000000ff);
+    #ifdef SVNREVISION
+     fprintf(stdout,"revision: %d\n",SVNREVISION);
+    #endif
+     fprintf(stdout, "\n");
 	return(prog_version);
 }
 
@@ -79,14 +83,15 @@ int usage()
 {
 	version();
 fprintf(stdout,"This program is licensed under the GPLv2.\n"); 
-fprintf(stdout,"(c) 2015 Brian Degnan, and the Georgia Institute of Technology\n\n");
-fprintf(stdout,"Simontool is a program that is intended to aid in the development of hardware implementations of the Simon cipher.  The program creates Piece-Wise-Linear wave forms that are of an appropriate format for SPICE simulators. \n");	
+fprintf(stdout,"(c) 2015-2016 Brian Degnan, and the Georgia Institute of Technology\n\n");
+fprintf(stdout,"Simontool is a program that is intended to aid in the development of hardware implementations of the Simon Cipher.  The program creates Piece-Wise-Linear wave forms that are of an appropriate format for SPICE simulators. \n");	
 fprintf(stdout,"\n   Options for simontool:\n");
 fprintf(stdout,"    -a       output all PWL files\n");
 fprintf(stdout,"    -b <arg> configure the block size in bits\n");
 fprintf(stdout,"    -c <arg> limit clock cycles\n");
 fprintf(stdout,"    -d       decryption\n");
 fprintf(stdout,"    -e       encryption\n");
+fprintf(stdout,"    -h       help (this page)\n");
 fprintf(stdout,"    -i <arg> input filename to encrypt/decrypt\n");
 fprintf(stdout,"    -k <arg> key size in bits\n");
 fprintf(stdout,"    -l <arg> include logfile with name\n");
@@ -96,14 +101,19 @@ fprintf(stdout,"    -s <arg> key hex in ASCII\n");
 fprintf(stdout,"    -t <arg> text hex in ASCII\n");
 fprintf(stdout,"    -u       hash ASCII (experimental) \n");
 fprintf(stdout,"    -v <arg> set voltage for PWL data\n");
-fprintf(stdout,"    -x <arg> LaTeX code file for key expansion (experimental) \n");
+fprintf(stdout,"    -x <arg> (experimental) LaTeX code output where \n");
+fprintf(stdout,"             <arg> becomes the prefix for -key.tex and -data.tex files \n");
+fprintf(stdout,"    -y       (experimental) printout expanded data and key to stdout  \n");
 fprintf(stdout,"    \n");
 fprintf(stdout,"An example of encryption for Simon 128/128: \n");   
 fprintf(stdout,"simontool -e -b 128 -k 128 -s 0f0e0d0c0b0a09080706050403020100 -t 63736564207372656c6c657661727420\n");
 fprintf(stdout,"\n");
 fprintf(stdout,"An example of decryption for Simon 32/64 that creates strobe files and logs the iterative outputs to the file d.txt:\n");
-fprintf(stdout,"simontool.elf -d -b 32 -k 64 -s 4d837db932f2fa04  -t c69be9bb -l d.txt\n");
-
+fprintf(stdout,"simontool -a -d -b 32 -k 64 -s 4d837db932f2fa04  -t c69be9bb -l d.txt\n");
+fprintf(stdout,"\n");
+fprintf(stdout,"An example of decryption for Simon 32/64 that outputs the final key and data to stdout:\n");
+fprintf(stdout,"simontool -d -b 32 -k 64 -s 4d837db932f2fa04  -t c69be9bb -y\n");
+fprintf(stdout,"\n");
 	
 	return(0);
 }
@@ -268,6 +278,7 @@ int main (int argc, char **argv) {
 	u32 flag_infileset=0;
 	u32 flag_outfileset=0;
 	u32 l_control_flags = 0;
+	i32 l_cmdarglen = 0;
 	
 	
 	FILE *f_ioread;
@@ -278,8 +289,28 @@ int main (int argc, char **argv) {
 	
 	simon_create();  //create the hardware framework, but not the "hardware".
 
+	//i wish there was a better way to handle this, but I'm getting the arguments for the sake of documentation
+    for (i32_tmp=1; i32_tmp<argc; i32_tmp++) {
+        l_cmdarglen += strlen(argv[i32_tmp]);
+        if (argc > i32_tmp+1)
+            l_cmdarglen++;
+    }
+   // printf("l_cmdarglen: %d\n", l_cmdarglen);
+
+    char *cmdstring = malloc(l_cmdarglen);
+    cmdstring[0] = '\0';
+
+    for (i32_tmp=1; i32_tmp<argc; i32_tmp++) {
+        strcat(cmdstring, argv[i32_tmp]);
+        if (argc > i32_tmp+1)
+            strcat(cmdstring, " ");
+    }
+   // printf("cmdstring: %s\n", cmdstring);
+    simon_set_cmdarg(cmdstring);
+    free(cmdstring);
+    
 	
-	while ( (c = getopt(argc, argv, "ab:z:c:k:i:o:s:w:t:l:?hv:dex:ur:")) != -1) {
+	while ( (c = getopt(argc, argv, "ab:c:k:i:o:s:w:t:l:?hv:dex:ur:y")) != -1) {
         switch (c) {
             case 'a':  //a for show all strobes
                simon_debug_setstrobes(SIMON_STROBE_ON);
@@ -314,7 +345,9 @@ int main (int argc, char **argv) {
             break;
             case 'r':  //write the key steps to a log file.
               u32_tmp = atoi(optarg);  // the r option sets the number of rounds.
-              simon_set_roundcount(u32_tmp);  //set the round number            
+             // fprintf(stdout, "simon_set_roundcount(%i)\n",u32_tmp);
+              simon_set_roundcount(u32_tmp);  //set the round number 
+            break;           
             case 's':  //secret key
 
             	i32_tmp=validate_hex_string(optarg);
@@ -345,7 +378,7 @@ int main (int argc, char **argv) {
             	{
             		if(strlen(optarg)<=_SIMON_ARRAY_LENGTH)
             		{
-            			simon_set_test_crypto_ascii(optarg); 
+            			simon_set_crypto_ascii(optarg); 
             		}else
             		{
             		  printf("error: \n");
@@ -413,6 +446,9 @@ int main (int argc, char **argv) {
             	simon_set_latexfile_ascii(optarg); 
         
             break;
+            case 'y':
+                simon_set_printoutput();  //select the printout.
+            break;
             case ':':
                 switch (optopt)
                 {
@@ -468,7 +504,7 @@ int main (int argc, char **argv) {
 	   }
 	}else
 	{  //this expects a stream
-  
+       // THIS IS NOT COMPLETE
 	   if(GETFLAG(l_control_flags,FLAG_ENCRYPT)!=0)
 	   {
 	     

@@ -26,7 +26,7 @@ result_response=$(echo $line|awk '{print $6;}')  #correct result
       # This line runs only the comparison 
       #result=$($simonexec -$arg_crypt -b $arg_block -k $arg_key -s $arg_keyvalue -t $arg_datavalue)
       #this line creates log outputs
-      result=$($simonexec -$arg_crypt -b $arg_block -k $arg_key -s $arg_keyvalue -t $arg_datavalue -l log.$arg_crypt.$arg_block.$arg_key.txt)
+      result=$($simonexec -$arg_crypt -b $arg_block -k $arg_key -s $arg_keyvalue -t $arg_datavalue -l log.$arg_crypt.$arg_block.$arg_key.txt -x simon-$arg_crypt-$arg_block-$arg_key)
       #$result has the returned value from the simontool
       #echo $result
       if [ $result == $result_response ]; then
