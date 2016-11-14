@@ -526,7 +526,7 @@ int main (int argc, char **argv) {
 		   }else
 		   {
 		   	fprintf(stdout,"ERROR\nno file name(s) give, please use the -i or -o options\n");
-		   	fprintf(stdout,"simontool -h for usage and examples");
+		   	fprintf(stdout,"simontool -h for usage and examples\n");
 		   }
 		   
 	   	  
