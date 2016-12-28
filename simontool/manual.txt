@@ -1,0 +1,86 @@
+
+SIMONTOOL
+
+1) Summary
+
+What is simontool?  Simontool is a program that is intended to aid in the development of hardware implementations of the Simon cipher; however, it can also encrypt files.  The program is now fast due to the overhead of creating simulation data.  The program creates Piece-Wise-Linear wave forms that are of an appropriate format for SPICE simulators.  
+
+1.1) Command options
+
+The simontool program is licensed under the GPLv2.
+(c) 2015-2017 Brian Degnan, and the Georgia Institute of Technology
+
+   Options for simontool:
+    -a       output all PWL files
+    -b <arg> configure the block size in bits
+    * -c <arg> limit clock cycles
+    -d       decryption
+    -e       encryption
+    -h       help (this page)
+    -i <arg> input filename to encrypt/decrypt
+    -k <arg> key size in bits
+    *  -l <arg> include logfile with name
+    -o <arg> output filename from encrypt/decrypt
+    *  -r <arg> number of rounds (experimental)
+    -s <arg> key hex in ASCII
+    -t <arg> text hex in ASCII
+    *  -u       hash ASCII (experimental), disables the LFSR 
+    -v <arg> set voltage for PWL data
+    *  -x <arg> (experimental) LaTeX code output where 
+             <arg> becomes the prefix for -key.tex and -data.tex files 
+    *  -y       (experimental) printout expanded data and key to stdout  
+
+    * denotes options that generally should not be used.
+
+1.2) Examples
+Test cases use the -t flag that does not expect a file.
+    
+An example of encryption for Simon 128/128: 
+simontool -e -b 128 -k 128 -s 0f0e0d0c0b0a09080706050403020100 -t 63736564207372656c6c657661727420
+
+An example of decryption for Simon 32/64 that creates strobe files and logs the iterative outputs to the file d.txt:
+simontool -a -d -b 32 -k 64 -s 4d837db932f2fa04  -t c69be9bb -l d.txt
+
+An example of decryption for Simon 32/64 that outputs the final key and data to stdout:
+simontool -d -b 32 -k 64 -s 4d837db932f2fa04  -t c69be9bb -y
+
+
+
+2) Functional Description
+
+First and foremost, simontool is a program to assist with the hardware simulation and verification of the Simon Cipher.  The program simulates a bit-serial implementation of the cipher, as it would be implemented in hardware.  This ads considerable overhead even if the strobe files are not being output.  The simontool program simulates every bit and key width of the simon cipher.
+
+The simontest.sh script will verify and encryption and decryption functionality of the program.  The script is written in BASH and reads from the simontest.data file.
+
+More details regarding the functionality of the program are described in my IEEE papers.
+
+3) File Encryption
+
+The simontool program can be used encrypt and decrypt data files.  The simontool program assumes that encryption and decryption uses same starting key but from differing points in the expansion.  For instance, for SIMON32/64, one would encrypt a file, in this case simon.c with the command: 
+simontool -e -b 32 -k64 -s 1918111009080100 -i simon.c -o simon.c.simon
+1918111009080100 is the starting key for encryption, but the resulting key after the expansion is 4d837db932f2fa04.  Therefore, decryption would use the expanded key:
+simontool.elf -d -b 32 -k 64 -s 4d837db932f2fa04 -i simon.c.simon -o simon.c.undo
+
+3.1 File Header Format
+
+When a file is encrypted with simontool, 32-bytes are used for stream information.
+
+The file header as of version 1.0.3 in ASCII:
+32 bytes, 8 for the word SIMON
+          8 for nothing
+		  4 for nothing
+		  4 for offset padding (most likely a value < 8)
+          4 for key size information <optional>
+          4 for block size information <optional>
+
+
+
+
+
+
+
+
+
+
+
+

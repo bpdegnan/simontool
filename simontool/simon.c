@@ -277,7 +277,6 @@ void simon_experimental_keyhash()
 {
 	//this is to disable the Z schedule
 	simonconfigptr->experimental_keyschedulehash = 1;  
-	
 }
 
 /*
@@ -908,16 +907,31 @@ void simon_hardware_test_printcrypto()
      //this is from the -y option.  You printout the key and data.  This is an easy way
      //to see the expansion of the key schedule and data.  This is useful with the 
      //LaTeX output for the key.  SVN 299 has this update.
-     //  ./bin/simontool.elf -e -b 32 -k 64 -s 19181110090805656877 -t 65656877 -y 
+     //  ./bin/simontool.elf -e -b 32 -k 64 -s 1918111009080100 -t 65656877 -y 
      // yields
      // key:  4d83 7db9 32f2 fa04 
      // data: c69b e9bb 
      // The key data is in the encryption loop
      	
         l_debugformatting_size = (simonconfigptr->derived_n)/(simonconfigptr->derived_m * 2);
-   		fprintf(stdout," key: ");
+        
+     
+     if(1){   
+     /*--Why were these removed?
+     Well, consider the following:
+     simontool.elf -e -b 32 -k 64 -s 0000000000000000  -t 00000000 -y
+     
+     key: 6ca9 3bfa fb04 96bf 
+      key: 549b 6ca9 3bfa fb04 
+     data: 5ae8 28ec 
+     
+     The proper key should be 6ca9 3bfa fb04 96bf as far as I can tell.  This is because 
+     
+     */
+   		fprintf(stdout,"final key: ");
         arbreg_debug_dumphexmod(stdout,p_hardware_key,l_debugformatting_size);
    		fprintf(stdout,"\n");
+     }
    		fprintf(stdout,"data: ");
         arbreg_debug_dumphexmod(stdout,p_hardware_cryptotext,l_debugformatting_size);
    		fprintf(stdout,"\n");
@@ -1860,19 +1874,22 @@ void simon_encryptcore_serial()
             //fprintf(stdout,"%02i: ",key_index);
 		    //arbreg_debug_dumphexmod(stdout,p_hardware_key,l_debugformatting_size);
 		   //fprintf(stdout,"\n");
-			
-			if(clock_counter>clock_experimental)
-			{
+
+
+	// -- svn 422 I removed this line because it wanted to see the complete key expansion with -y		
+	//		if(clock_counter>clock_experimental)
+	//		{
+	
 			if(simonconfigptr->experimental_printoutputs!=0)
              {
 				 l_debugformatting_size = (simonconfigptr->derived_n)/(simonconfigptr->derived_m * 2);
-				 fprintf(stdout,"key: ");
+				 fprintf(stdout,"key[%02d]: ",key_index);
 				 arbreg_debug_dumphexmod(stdout,p_hardware_key,l_debugformatting_size);
 				 //this ascii key is for the last key
 				 //arbreg_debug_dumphexmod((FILE *)(simonconfigptr->key_ascii_final),p_hardware_key,l_debugformatting_size);
 				 fprintf(stdout,"\n");
 			 }
-			}   
+		//	}   -- svn 422 related to the if
 			key_index++;
        }  //end of if (key_bitclock==0)
         
@@ -2275,19 +2292,16 @@ void simon_decryptcore_serial()
 		arbreg_debug_dumphexmod(fp_latexfile_data,p_hardware_cryptotext,l_debugformatting_size);
 		fprintf(fp_latexfile_data,"\n");
     }	
-           
            //please see notes in encryption code
-
 			if(simonconfigptr->experimental_printoutputs!=0)
              {
 				 l_debugformatting_size = (simonconfigptr->derived_n)/(simonconfigptr->derived_m * 2);
-				 fprintf(stdout,"key: ");
+				 fprintf(stdout,"key[%02d]: ",key_index);
 				 arbreg_debug_dumphexmod(stdout,p_hardware_key,l_debugformatting_size);
 				 //this ascii key is for the last key
 				 //arbreg_debug_dumphexmod((FILE *)(simonconfigptr->key_ascii_final),p_hardware_key,l_debugformatting_size);
 				 fprintf(stdout,"\n");
 			 }
-		
 			key_index++;		
        }
        

@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "simon.h"
 
 #define _BUILD_MAIN
-static const u32 prog_version=0x00010002;
+static const u32 prog_version=0x00010003;
 
 /*
 
@@ -82,27 +82,29 @@ int usage()
 {
 	version();
 fprintf(stdout,"This program is licensed under the GPLv2.\n"); 
-fprintf(stdout,"(c) 2015-2016 Brian Degnan, and the Georgia Institute of Technology\n\n");
+fprintf(stdout,"(c) 2015-2017 Brian Degnan, and the Georgia Institute of Technology\n\n");
 fprintf(stdout,"Simontool is a program that is intended to aid in the development of hardware implementations of the Simon Cipher.  The program creates Piece-Wise-Linear wave forms that are of an appropriate format for SPICE simulators. \n");	
 fprintf(stdout,"\n   Options for simontool:\n");
 fprintf(stdout,"    -a       output all PWL files\n");
 fprintf(stdout,"    -b <arg> configure the block size in bits\n");
-fprintf(stdout,"    -c <arg> limit clock cycles\n");
+fprintf(stdout,"    -c <arg> limit clock cycles *\n");
 fprintf(stdout,"    -d       decryption\n");
 fprintf(stdout,"    -e       encryption\n");
 fprintf(stdout,"    -h       help (this page)\n");
 fprintf(stdout,"    -i <arg> input filename to encrypt/decrypt\n");
 fprintf(stdout,"    -k <arg> key size in bits\n");
-fprintf(stdout,"    -l <arg> include logfile with name\n");
+fprintf(stdout,"    -l <arg> include logfile with name *\n");
 fprintf(stdout,"    -o <arg> output filename from encrypt/decrypt\n");
-fprintf(stdout,"    -r <arg> number of rounds (experimental)\n");
+fprintf(stdout,"    -r <arg> number of rounds (experimental) *\n");
 fprintf(stdout,"    -s <arg> key hex in ASCII\n");
 fprintf(stdout,"    -t <arg> text hex in ASCII\n");
-fprintf(stdout,"    -u       hash ASCII (experimental) \n");
+fprintf(stdout,"    -u       hash ASCII (experimental), disables the LFSR *\n");
 fprintf(stdout,"    -v <arg> set voltage for PWL data\n");
-fprintf(stdout,"    -x <arg> (experimental) LaTeX code output where \n");
+fprintf(stdout,"    -x <arg> (experimental) LaTeX code output where *\n");
 fprintf(stdout,"             <arg> becomes the prefix for -key.tex and -data.tex files \n");
-fprintf(stdout,"    -y       (experimental) printout expanded data and key to stdout  \n");
+fprintf(stdout,"    -y       (experimental) printout expanded data and key to stdout*  \n");
+fprintf(stdout,"    \n");
+fprintf(stdout,"    Commands followed by * are only used for development.\n");
 fprintf(stdout,"    \n");
 fprintf(stdout,"An example of encryption for Simon 128/128: \n");   
 fprintf(stdout,"simontool -e -b 128 -k 128 -s 0f0e0d0c0b0a09080706050403020100 -t 63736564207372656c6c657661727420\n");
@@ -112,6 +114,14 @@ fprintf(stdout,"simontool -a -d -b 32 -k 64 -s 4d837db932f2fa04  -t c69be9bb -l 
 fprintf(stdout,"\n");
 fprintf(stdout,"An example of decryption for Simon 32/64 that outputs the final key and data to stdout:\n");
 fprintf(stdout,"simontool -d -b 32 -k 64 -s 4d837db932f2fa04  -t c69be9bb -y\n");
+fprintf(stdout,"\n");
+fprintf(stdout,"Encrypting a file with simontool is not straightforward, as an example: \n");
+fprintf(stdout,"simontool -e -b 32 -k64 -s 1918111009080100 -i simon.c -o simon.c.simon\n");
+fprintf(stdout,"1918111009080100 is the starting key for encryption, but the resulting \n");
+fprintf(stdout,"key after the expansion is 4d837db932f2fa04.  Therefore, decryption \n");
+fprintf(stdout,"would use the expanded key:\n");
+fprintf(stdout,"simontool -d -b 32 -k 64 -s 4d837db932f2fa04 -i simon.c.simon -o simon.c.undo\n");
+fprintf(stdout,"\n");
 fprintf(stdout,"\n");
 	
 	return(0);
@@ -550,7 +560,7 @@ int main (int argc, char **argv) {
 		 }else
 		 {
 		   	fprintf(stdout,"ERROR\nno file name(s) give, please use the -i or -o options\n");
-		   	fprintf(stdout,"simontool -h for usage and examples");
+		   	fprintf(stdout,"simontool -h for usage and examples\n");
 		 }   
 	   }
 	}

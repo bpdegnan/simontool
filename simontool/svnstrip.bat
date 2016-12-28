@@ -1,6 +1,8 @@
 @setlocal
 @echo off
 rem svnstrip.bat
+rem This script allows the Makefile to be portable to Windows
+rem 
 rem Given a string possibly containing a number, print the first integer.
 rem 123test456 -> 123
 rem Note that special characters may not be properly handled.  (e.g. , ;)
