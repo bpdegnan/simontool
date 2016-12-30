@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2015-2016  Brian Degnan http://degnan68k.blogspot.com/
+Copyright (C) 2015-2017  Brian Degnan http://degnan68k.blogspot.com/
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -29,8 +29,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define _SIMON_DEFAULT_VOLTAGE "3.3"
 #define SIMON_STROBE_OFF 0
 #define SIMON_STROBE_ON 0x00000001
-
 #define SIMON_ENCRYPT 0x00000001
+
+//support for different block sizes
+#define MODE_EBC 0x00000000
+#define MODE_CBC 0x00000001
+#define CBC_SUCCESS 0x00000000
+#define CBC_ERROR 0xFFFFFFFF
+#define CBC_SIZEMISMATCH 0xFFFFFFFE
 
 
 typedef struct{
@@ -92,6 +98,9 @@ typedef struct{
    i32 simon_bytecount;  //this represents the number of bytes in a chunk to give to the encryption engine.  You need to "pad" things if you are not aligned.  For instance, if you give 2 bytes to a 8 byte encryption chunk
    u8 data_in[_SIMON_ARRAY_LENGTH];  
    u8 data_out[_SIMON_ARRAY_LENGTH];
+   //these two were afterthoughts for the stream encoding.
+   i32 simoncbc_bytecount;  //byte index into the CBC word
+   u8 data_CBC[_SIMON_ARRAY_LENGTH];  //array to hold the CBC word
 
 }simondata;
 
@@ -131,6 +140,14 @@ void simon_set_crypto_ascii(const char *p_cryptostring);
 void simon_set_logfile_ascii(const char *p_logfile);
 void simon_set_latexfile_ascii(const char *p_latexfile);
 void simon_set_voltage_ascii(const char *p_voltage);
+
+//functions for the stream cipher
+i32 simon_hardware_CBCaddbyte(u8 r_blockbyte);
+void simon_hardware_CBCsetindex(u8 l_index);
+i32 simon_hardware_CBCXORdatain();
+i32 simon_hardware_CBCXORdataout();
+i32 simon_hardware_CBCcloneinput();
+u32 simon_set_ciphermode(const char *p_blockmode);
 
 //--Experimental or logging
 void simon_experimental_keyhash();  

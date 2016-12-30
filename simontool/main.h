@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2015-2016  Brian Degnan http://degnan68k.blogspot.com/
+Copyright (C) 2015-2017  Brian Degnan http://degnan68k.blogspot.com/
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,5 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define FLAG_TEST 0x00010000
 #define FLAG_ENCRYPT 0x00000010
 #define FLAG_DECRYPT 0x00000020
+
+
+
 
 #endif

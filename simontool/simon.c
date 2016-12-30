@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2015-2016  Brian Degnan http://degnan68k.blogspot.com/
+Copyright (C) 2015-2017  Brian Degnan http://degnan68k.blogspot.com/
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -834,6 +834,117 @@ i32 simon_hardware_blocksubtractbyte()
     u8 r_blockbyte=simondataptr->data_out[l_index];    
     simondataptr->simon_bytecount = l_index;
     return(r_blockbyte);
+}
+
+/*
+** simon_hardware_CBCchainword exists to change the file encryption mode from 
+** ECB to CBC  The following functions with CBC support this
+*/
+
+i32 simon_hardware_CBCaddbyte(u8 r_blockbyte)
+{
+	u32 l_index = simondataptr->simoncbc_bytecount;  //the index of the current byte
+    simondataptr->data_CBC[l_index]=r_blockbyte;
+    l_index = l_index +1;
+    simondataptr->simoncbc_bytecount = l_index;
+    return(l_index);
+}
+
+void simon_hardware_CBCsetindex(u8 l_index)
+{
+   simondataptr->simoncbc_bytecount = l_index;
+}
+
+// simon_hardware_CBCXOR does an XOR of whatever is in the simondataptr->data_out and
+// data_CBC arrays
+i32 simon_hardware_CBCXORdatain()
+{
+   u32 l_index = simondataptr->simon_bytecount;
+   u32 l_indexcbc = simondataptr->simoncbc_bytecount;
+   u32 l_counter = 0;
+   u8  l_byte=0;
+ /*  
+   fprintf(stdout,"compare: %d, %d\n",l_index,l_indexcbc);
+   fprintf(stdout,"din: ");
+   for(l_counter=0;l_counter<l_index;l_counter++)
+   {
+     fprintf(stdout, "%02x",simondataptr->data_in[l_counter] );
+   }
+   fprintf(stdout,"\ncbc: ");
+   for(l_counter=0;l_counter<l_indexcbc;l_counter++)
+   {
+     fprintf(stdout, "%02x",simondataptr->data_CBC[l_counter] );
+   }
+   fprintf(stdout,"\n");
+ */  
+   //first, make sure that the counters are the same.
+   if(l_index!=l_indexcbc)
+   {
+       return(CBC_SIZEMISMATCH);
+   }
+   for(l_counter=0;l_counter<l_index;l_counter++)
+   {//XOR the two arrays
+      l_byte=simondataptr->data_CBC[l_counter];  //the byte to XOR with the raw data
+      l_byte=simondataptr->data_in[l_counter] ^ l_byte; // XOR operation
+      simondataptr->data_in[l_counter]=l_byte;
+   }
+   return(CBC_SUCCESS);
+}
+
+i32 simon_hardware_CBCXORdataout()
+{
+   u32 l_index = simondataptr->simon_bytecount;
+   u32 l_indexcbc = simondataptr->simoncbc_bytecount;
+   u32 l_counter = 0;
+   u8  l_byte=0;
+   //first, make sure that the counters are the same.
+   if(l_index!=l_indexcbc)
+   {
+       return(CBC_SIZEMISMATCH);
+   }
+   for(l_counter=0;l_counter<l_index;l_counter++)
+   {//XOR the two arrays
+      l_byte=simondataptr->data_CBC[l_counter];  //the byte to XOR with the raw data
+      l_byte=simondataptr->data_out[l_counter] ^ l_byte; // XOR operation
+      simondataptr->data_out[l_counter]=l_byte;
+   }
+   return(CBC_SUCCESS);
+}
+
+/*
+**  The CBCcloneinput takes the data_in buffer and copies this to the CBC buffer
+**  This is necessary for description because of how simontool buffers work.
+*/
+i32 simon_hardware_CBCcloneinput()
+{
+   u32 l_index = simondataptr->simon_bytecount;
+   u32 l_indexcbc = simondataptr->simoncbc_bytecount;
+   u32 l_counter = 0;
+ 
+   //first, make sure that the counters are the same.
+   if(l_index!=l_indexcbc)
+   {
+       return(CBC_SIZEMISMATCH);
+   }
+   for(l_counter=0;l_counter<l_index;l_counter++)
+   {//XOR the two arrays
+      simondataptr->data_CBC[l_counter]=simondataptr->data_in[l_counter]; //copy data
+   }
+   return(CBC_SUCCESS);
+}
+
+/*
+**  u32 simon_set_ciphermode(const char *p_blockmode)
+**  parse the -m argument for the mode.  EBC is default
+*/
+u32 simon_set_ciphermode(const char *p_blockmode)
+{
+  u32 l_result=MODE_EBC;
+   if(simon_stricmp("CBC",p_blockmode)==0)
+   {
+      l_result=MODE_CBC;
+   }
+  return(l_result);
 }
 
 
@@ -1735,6 +1846,9 @@ void simon_encryptcore_serial()
     }
 	
 	simon_hardware_counter_reset();
+	
+	
+	
 	key_bitclock = 0;  
 	/* note: clock_max
 	** this is ONE more than you'd expect because of the fact that we have
@@ -1846,26 +1960,28 @@ void simon_encryptcore_serial()
 	    fprintf(fp_logfile,"\\\\\n");
 #endif
 			}
-	//this creates the "bit array" for LaTeX and we need the terminator of , or % depending on the last line 
-	if(simonconfigptr->filectl_latexoutput > 0)
-	{
-		//if we want the key bit field
-		l_flag=1;
-		if(clock_counter==(clock_max-simonconfigptr->derived_n))
-		{  l_flag=0; }  //this determines which terminator we use
-		//fprintf(stdout,"l_flag: %i\n",l_flag);
-		//this first block of code is the key information for the latex output
-		arbreg_debug_dumpbits_latexarray(fp_latexfile_key,p_hardware_key,l_flag);  //the bit function
-		fprintf(fp_latexfile_key,"%%");
-		arbreg_debug_dumphexmod(fp_latexfile_key,p_hardware_key,l_debugformatting_size);
-		fprintf(fp_latexfile_key,"\n");
+		//this creates the "bit array" for LaTeX and we need the terminator of , or % depending on the last line 
+		if(simonconfigptr->filectl_latexoutput > 0)
+		{
+			//if we want the key bit field
+			l_flag=1;  //rev 466, if you have the final key print out below, hard code this.
 			
-		//this block is the cryptotext output.	
-        arbreg_debug_dumpbits_latexarray(fp_latexfile_data,p_hardware_cryptotext,l_flag);  //the bit function
-		fprintf(fp_latexfile_data,"%%");
-		arbreg_debug_dumphexmod(fp_latexfile_data,p_hardware_cryptotext,l_debugformatting_size);
-		fprintf(fp_latexfile_data,"\n");
-    }		
+			//if(clock_counter==(clock_max-simonconfigptr->derived_n))
+			//{  l_flag=0; }  //this determines which terminator we use
+			
+			//fprintf(stdout,"l_flag: %i\n",l_flag);
+			//this first block of code is the key information for the latex output
+			arbreg_debug_dumpbits_latexarray(fp_latexfile_key,p_hardware_key,l_flag);  //the bit function
+			fprintf(fp_latexfile_key,"%%");
+			arbreg_debug_dumphexmod(fp_latexfile_key,p_hardware_key,l_debugformatting_size);
+			fprintf(fp_latexfile_key,"\n");
+			
+			//this block is the cryptotext output.	
+			arbreg_debug_dumpbits_latexarray(fp_latexfile_data,p_hardware_cryptotext,l_flag);  //the bit function
+			fprintf(fp_latexfile_data,"%%");
+			arbreg_debug_dumphexmod(fp_latexfile_data,p_hardware_cryptotext,l_debugformatting_size);
+			fprintf(fp_latexfile_data,"\n");
+		}		
 	
 			//due to how this code works simulating hardware, if you end up with
 			//a key error for printing, not encryption because it iterates an extra
@@ -1876,21 +1992,17 @@ void simon_encryptcore_serial()
 		   //fprintf(stdout,"\n");
 
 
-	// -- svn 422 I removed this line because it wanted to see the complete key expansion with -y		
-	//		if(clock_counter>clock_experimental)
-	//		{
-	
-			if(simonconfigptr->experimental_printoutputs!=0)
-             {
-				 l_debugformatting_size = (simonconfigptr->derived_n)/(simonconfigptr->derived_m * 2);
-				 fprintf(stdout,"key[%02d]: ",key_index);
-				 arbreg_debug_dumphexmod(stdout,p_hardware_key,l_debugformatting_size);
-				 //this ascii key is for the last key
-				 //arbreg_debug_dumphexmod((FILE *)(simonconfigptr->key_ascii_final),p_hardware_key,l_debugformatting_size);
-				 fprintf(stdout,"\n");
-			 }
-		//	}   -- svn 422 related to the if
-			key_index++;
+
+		   if(simonconfigptr->experimental_printoutputs!=0)
+		   {
+				l_debugformatting_size = (simonconfigptr->derived_n)/(simonconfigptr->derived_m * 2);
+				fprintf(stdout,"key[%02d]: ",key_index);
+				arbreg_debug_dumphexmod(stdout,p_hardware_key,l_debugformatting_size);
+				//this ascii key is for the last key
+				//arbreg_debug_dumphexmod((FILE *)(simonconfigptr->key_ascii_final),p_hardware_key,l_debugformatting_size);
+				fprintf(stdout,"\n");
+		   }
+		   key_index++;
        }  //end of if (key_bitclock==0)
         
       /******
@@ -1907,8 +2019,25 @@ void simon_encryptcore_serial()
 			simon_hardwareclock();     //tick
 			key_bitclock = key_bitclock+1;  //increment the key clock counter
 
-	}
-	
+	}  //END for (clock_counter=0;clock_counter<clock_max;clock_counter++)
+
+
+//write the FINAL round out to the file.  This is moved here as of 466
+	if(simonconfigptr->filectl_latexoutput > 0)
+    {
+       l_flag = 0;  //0 sets the terminator type in arbreg_debug_dumpbits_latexarray
+	   arbreg_debug_dumpbits_latexarray(fp_latexfile_key,p_hardware_key,l_flag);  //the bit function
+	   fprintf(fp_latexfile_key,"%%");
+	   arbreg_debug_dumphexmod(fp_latexfile_key,p_hardware_key,l_debugformatting_size);
+	   fprintf(fp_latexfile_key,"\n");
+	   
+	   //this block is the cryptotext output.	
+	   arbreg_debug_dumpbits_latexarray(fp_latexfile_data,p_hardware_cryptotext,l_flag);  //the bit function
+	   fprintf(fp_latexfile_data,"%%");
+	   arbreg_debug_dumphexmod(fp_latexfile_data,p_hardware_cryptotext,l_debugformatting_size);
+	   fprintf(fp_latexfile_data,"\n");    
+    }
+//write the rendering footer	
 	if(simonconfigptr->filectl_latexoutput > 0)
 	{
 		// these are the preambles that I need for the LaTeX bit table.
@@ -1944,7 +2073,7 @@ void simon_encryptcore_serial()
 		
 		fprintf(fp_latexfile_key,"%%this creates the sidebar ticks\n");
 		fprintf(fp_latexfile_key,"\\foreach \\itick in {0,...,\\maxy}{\n"); 
-		fprintf(fp_latexfile_key,"	 \\pgfmathparse{int(mod(\\itick,10))} \n"); 
+		fprintf(fp_latexfile_key,"	 \\pgfmathparse{int(mod((\\itick-1),10))} \n"); 
 		fprintf(fp_latexfile_key,"	 \\ifnum\\pgfmathresult<1\n"); 
 		fprintf(fp_latexfile_key,"	    \\draw (0,-\\itick*\\gridstep) -- (-\\gridstep*\\lineextstep/3,-\\itick*\\gridstep);\n"); 
 		fprintf(fp_latexfile_key,"	 \\fi\n"); 
@@ -1994,7 +2123,7 @@ void simon_encryptcore_serial()
 		
 		fprintf(fp_latexfile_data,"%%this creates the sidebar ticks\n");
 		fprintf(fp_latexfile_data,"\\foreach \\itick in {0,...,\\maxy}{\n"); 
-		fprintf(fp_latexfile_data,"	 \\pgfmathparse{int(mod(\\itick,10))} \n"); 
+		fprintf(fp_latexfile_data,"	 \\pgfmathparse{int(mod((\\itick-1),10))} \n"); 
 		fprintf(fp_latexfile_data,"	 \\ifnum\\pgfmathresult<1\n"); 
 		fprintf(fp_latexfile_data,"	    \\draw (0,-\\itick*\\gridstep) -- (-\\gridstep*\\lineextstep/3,-\\itick*\\gridstep);\n"); 
 		fprintf(fp_latexfile_data,"	 \\fi\n"); 
@@ -2311,6 +2440,24 @@ void simon_decryptcore_serial()
 	   simon_hardwareclock();
 	   key_bitclock = key_bitclock+1;  //increment the key clock counter once all functions complete
 	}
+	//END for (clock_counter=0;clock_counter<clock_max;clock_counter++)
+
+    if(simonconfigptr->filectl_latexoutput > 0)
+	{
+        //final round printout.
+ 		l_flag=0;
+		arbreg_debug_dumpbits_latexarray(fp_latexfile_key,p_hardware_key,l_flag);  //the bit function
+		fprintf(fp_latexfile_key,"%%");
+		arbreg_debug_dumphexmod(fp_latexfile_key,p_hardware_key,l_debugformatting_size);
+		fprintf(fp_latexfile_key,"\n");
+			
+		//this block is the cryptotext output.	
+        arbreg_debug_dumpbits_latexarray(fp_latexfile_data,p_hardware_cryptotext,l_flag);  //the bit function
+		fprintf(fp_latexfile_data,"%%");
+		arbreg_debug_dumphexmod(fp_latexfile_data,p_hardware_cryptotext,l_debugformatting_size);
+		fprintf(fp_latexfile_data,"\n");
+    }	
+	
 	// fprintf(stdout, "z[%02i] ",key_index);	
 	// arbreg_debug_dumpbits(stdout,p_hardware_LFSR,1);
  
@@ -2349,7 +2496,7 @@ void simon_decryptcore_serial()
 		
 		fprintf(fp_latexfile_key,"%%this creates the sidebar ticks\n");
 		fprintf(fp_latexfile_key,"\\foreach \\itick in {0,...,\\maxy}{\n"); 
-		fprintf(fp_latexfile_key,"	 \\pgfmathparse{int(mod(\\itick,10))} \n"); 
+		fprintf(fp_latexfile_key,"	 \\pgfmathparse{int(mod((\\itick-1),10))} \n"); 
 		fprintf(fp_latexfile_key,"	 \\ifnum\\pgfmathresult<1\n"); 
 		fprintf(fp_latexfile_key,"	    \\draw (0,-\\itick*\\gridstep) -- (-\\gridstep*\\lineextstep/3,-\\itick*\\gridstep);\n"); 
 		fprintf(fp_latexfile_key,"	 \\fi\n"); 
@@ -2399,7 +2546,7 @@ void simon_decryptcore_serial()
 		
 		fprintf(fp_latexfile_data,"%%this creates the sidebar ticks\n");
 		fprintf(fp_latexfile_data,"\\foreach \\itick in {0,...,\\maxy}{\n"); 
-		fprintf(fp_latexfile_data,"	 \\pgfmathparse{int(mod(\\itick,10))} \n"); 
+		fprintf(fp_latexfile_data,"	 \\pgfmathparse{int(mod((\\itick-1),10))} \n"); 
 		fprintf(fp_latexfile_data,"	 \\ifnum\\pgfmathresult<1\n"); 
 		fprintf(fp_latexfile_data,"	    \\draw (0,-\\itick*\\gridstep) -- (-\\gridstep*\\lineextstep/3,-\\itick*\\gridstep);\n"); 
 		fprintf(fp_latexfile_data,"	 \\fi\n"); 

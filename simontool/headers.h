@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2015-2016  Brian Degnan http://degnan68k.blogspot.com/
+Copyright (C) 2015-2017  Brian Degnan http://degnan68k.blogspot.com/
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	#include <string.h>	   /* strlen  */
 	#include <signal.h>
 	#include <limits.h>   
+	#include <ctype.h>
 	#include "byteconfiguration.h"
 	#include "utilities.h"
     

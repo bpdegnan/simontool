@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2015-2016  Brian Degnan http://degnan68k.blogspot.com/
+Copyright (C) 2015-2017  Brian Degnan http://degnan68k.blogspot.com/
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,6 +17,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 */
 #include "utilities.h"
+
+
+
+i32 simon_stricmp(const char *a, const char *b) {
+  i32 ca, cb;
+  do {
+     ca = (u8) *a++;
+     cb = (u8) *b++;
+     ca = tolower(toupper(ca));
+     cb = tolower(toupper(cb));
+   } while (ca == cb && ca != '\0');
+   return ca - cb;
+}
 
 u32 util_validroundsize(u32 u_power)
 {

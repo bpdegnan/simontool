@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2015-2016  Brian Degnan http://degnan68k.blogspot.com/
+Copyright (C) 2015-2017  Brian Degnan http://degnan68k.blogspot.com/
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "simon.h"
 
 #define _BUILD_MAIN
-static const u32 prog_version=0x00010003;
+static const u32 prog_version=0x00010004;
 
 /*
 
@@ -72,7 +72,7 @@ int version()
 {	
 	fprintf(stdout,"simontool\nversion: %i.%i.%i\n", (prog_version >> 16)&0x0000ffff, (prog_version >> 8)&0x000000ff,(prog_version >> 0)&0x000000ff);
     #ifdef SVNREVISION
-     fprintf(stdout,"revision: %d\n",SVNREVISION);
+     fprintf(stdout,"control revision: %d\n",SVNREVISION);
     #endif
      fprintf(stdout, "\n");
 	return(prog_version);
@@ -94,10 +94,11 @@ fprintf(stdout,"    -h       help (this page)\n");
 fprintf(stdout,"    -i <arg> input filename to encrypt/decrypt\n");
 fprintf(stdout,"    -k <arg> key size in bits\n");
 fprintf(stdout,"    -l <arg> include logfile with name *\n");
+fprintf(stdout,"    -m <arg> specify code book mode when using files (not -t option) \n");
 fprintf(stdout,"    -o <arg> output filename from encrypt/decrypt\n");
 fprintf(stdout,"    -r <arg> number of rounds (experimental) *\n");
 fprintf(stdout,"    -s <arg> key hex in ASCII\n");
-fprintf(stdout,"    -t <arg> text hex in ASCII\n");
+fprintf(stdout,"    -t <arg> test hex in ASCII\n");
 fprintf(stdout,"    -u       hash ASCII (experimental), disables the LFSR *\n");
 fprintf(stdout,"    -v <arg> set voltage for PWL data\n");
 fprintf(stdout,"    -x <arg> (experimental) LaTeX code output where *\n");
@@ -137,7 +138,9 @@ int file_readsimon(FILE *f_ioread,FILE *f_iowrite)
 	u32 l_blocksize_bytes=l_blocksize_bits/8;
 	u64 l_bytecounter=0;
 	u64 l_ioreadlength=0;
-
+	u32 l_mode=0;
+    u32 l_counter=0;
+    
 	fseek(f_ioread, 0, SEEK_END); // seek to end of file
 	l_ioreadlength = ftell(f_ioread); // get current file pointer
 	fseek(f_ioread, 0, SEEK_SET); // seek back to beginning of file
@@ -145,7 +148,30 @@ int file_readsimon(FILE *f_ioread,FILE *f_iowrite)
 	fseek(f_ioread,23,SEEK_SET);  //skip to the offset
 	l_result=fread(l_singlebyte, 1, 1, f_ioread);
 	l_offset=l_singlebyte[0]-0x30;  //this is the amount of data to remove from the end of the file.
+	
+	//check if we have a CBC file
+	//grab just the first C
+	fseek(f_ioread,19,SEEK_SET);  //skip to the offset
+	l_result=fread(l_singlebyte, 1, 1, f_ioread);
+	//fprintf(stdout,"0x%02x\n",l_singlebyte[0]);
+	if(l_singlebyte[0]==0x43)
+	{
+	  l_mode=MODE_CBC;
+	}
+		
 	fseek(f_ioread,32,SEEK_SET);  //skip the header.
+	
+	
+	//if we have CBC mode, we need to use the IV against the first block
+	if(l_mode==MODE_CBC)
+	{
+	    simon_hardware_CBCsetindex(0); 
+	    for(l_counter=0;l_counter<l_blocksize_bytes;l_counter++)
+	    {
+			simon_hardware_CBCaddbyte(0x55);
+		}
+	}
+	
 	
     do{	
     	l_result=fread(l_singlebyte, 1, 1, f_ioread);   //read a byte from the file
@@ -166,8 +192,14 @@ int file_readsimon(FILE *f_ioread,FILE *f_iowrite)
     	if(l_bytecounter>=l_blocksize_bytes)  //encrypt and reset the byte counter
     	{  
     	   simon_decryptcore_serial(); 
+    	   if(l_mode==MODE_CBC)
+		   {
+			   l_counter=simon_hardware_CBCXORdataout();  //the counter variable is unused here, so us it
+		       simon_hardware_CBCcloneinput();  //after the xor of dataout array, copy the datain to the CBC array
+		   }
+		   
+		   
     	   //now get the bytes from the file.
-    	   
     	   for(l_bytecounter=0;l_bytecounter<l_blocksize_bytes;l_bytecounter++)
     		{
     			l_singlebyte[0]=simon_hardware_getdataoutatbyte(l_bytecounter);
@@ -194,7 +226,7 @@ int file_readsimon(FILE *f_ioread,FILE *f_iowrite)
 **  
 **
 */
-int file_writesimon(FILE *f_ioread,FILE *f_iowrite)
+int file_writesimon(FILE *f_ioread,FILE *f_iowrite, unsigned int p_mode)
 {
 	u8  l_singlebyte[1];
 	i32 l_result = 0;
@@ -202,12 +234,13 @@ int file_writesimon(FILE *f_ioread,FILE *f_iowrite)
 	u32 l_blocksize_bytes=l_blocksize_bits/8;
 	u64 l_ioreadlength=0;  //the length of the file in bytes
 	u64 l_bytecounter=0;
+	u32 l_counter=0;
 
 /*
 **  here is my tentative file header in ASCII:
 **  32 bytes, 8 for the word SIMON
 **            8 for nothing
-**			  4 for nothing
+**			  4 for mode type, empty is EBC
 **			  4 for offset padding (most likely a value < 8)
 **            4 for key size information <optional>
 **            4 for block size information <optional>
@@ -227,13 +260,32 @@ int file_writesimon(FILE *f_ioread,FILE *f_iowrite)
 	//write header
 	fprintf(f_iowrite,"SIMON   ");
 	fprintf(f_iowrite,"        ");
-	fprintf(f_iowrite,"    ");
+	if(p_mode==MODE_CBC)
+	{
+	   fprintf(f_iowrite," CBC");
+	}
+	else
+	{
+	   fprintf(f_iowrite,"    ");  //ECB
+	}
 	fprintf(f_iowrite,"%4i",(u8)(l_blocksize_bytes-(u8)(l_ioreadlength%(l_blocksize_bytes))));
 	fprintf(f_iowrite,"%4i",l_blocksize_bits);
 	fprintf(f_iowrite,"%4i",simon_get_keysize());
 	
 	simon_hardware_blocksetindex(0); //make sure that the block index is reset
-	
+
+    // if we have CBC mode, we need to put an initialization vector in,
+    // my current IV is just 0x55.  This code only runs in the beginning, otherwise
+    // we use the previous rounds. 
+	if(p_mode==MODE_CBC)
+	{
+	    simon_hardware_CBCsetindex(0); 
+	    for(l_counter=0;l_counter<l_blocksize_bytes;l_counter++)
+	    {
+			simon_hardware_CBCaddbyte(0x55);
+		}
+	} 
+
 	//loop through the file, I'm using a for loop so I can stop it if I need to examine things
 	//for(l_bytecounter = 0; l_bytecounter < l_ioreadlength; l_bytecounter++) {
     //loop getting bytes
@@ -241,6 +293,8 @@ int file_writesimon(FILE *f_ioread,FILE *f_iowrite)
     //encrypt when full, then save	
     do{	
     	l_result=fread(l_singlebyte, 1, 1, f_ioread);   //read a byte from the file
+    	//We need to read to the correct block size, so if you need 3 bytes but have 1, you
+    	//pad with 2 bytes of 0.
     	if(l_result!=0) //we have a byte, so add it to the queue
     	{
     	   simon_hardware_blockaddbyte(l_singlebyte[0]);
@@ -250,12 +304,20 @@ int file_writesimon(FILE *f_ioread,FILE *f_iowrite)
     		//finish off the block
     		while(l_bytecounter<l_blocksize_bytes)
     		{
-    			simon_hardware_blockaddbyte(0);
+    			simon_hardware_blockaddbyte(0);  //pad with byte of 0
     		    l_bytecounter++;
     		}
-    	}	
+    	}
+    	    		
     	if(l_bytecounter>=l_blocksize_bytes)  //encrypt and reset the byte counter
     	{  
+    	
+		   //when the simon_encryptcore_serial() function is called, the data in the 
+		   //data_in array is encrypted, so before this we will do the CBC xor
+		   if(p_mode==MODE_CBC)
+		   {
+			   l_counter=simon_hardware_CBCXORdatain();  //the counter variable is unused here, so us it
+		   }
     	   simon_encryptcore_serial(); 
     	   //now get the bytes from the file.
     	   
@@ -263,10 +325,20 @@ int file_writesimon(FILE *f_ioread,FILE *f_iowrite)
     		{
     			l_singlebyte[0]=simon_hardware_getdataoutatbyte(l_bytecounter);
     			fwrite(l_singlebyte,1,1,f_iowrite);  //write the encrypted data to a file.
+    			//save the encrypted byte if CBC mode
+    			if(p_mode==MODE_CBC)
+    			{
+    			   if(l_bytecounter==0)//reset to 0
+    			   {  simon_hardware_CBCsetindex(0); }
+    			   simon_hardware_CBCaddbyte(l_singlebyte[0]);
+    			}
+    			
     		}
     	   simon_hardware_blocksetindex(0);  //reset the buffer
     	   l_bytecounter=0;  
-    	} 
+    	}
+    	
+    	 
 		
 		}while(l_result!=0);
 		
@@ -288,7 +360,7 @@ int main (int argc, char **argv) {
 	u32 flag_outfileset=0;
 	u32 l_control_flags = 0;
 	i32 l_cmdarglen = 0;
-	
+	u32 l_ciphermode=MODE_EBC;
 	
 	FILE *f_ioread;
 	FILE *f_iowrite;
@@ -319,7 +391,7 @@ int main (int argc, char **argv) {
     free(cmdstring);
     
 	
-	while ( (c = getopt(argc, argv, "ab:c:k:i:o:s:w:t:l:?hv:dex:ur:y")) != -1) {
+	while ( (c = getopt(argc, argv, "ab:c:dehi:k:m:o:r:s:t:l:?v:w:x:uy")) != -1) {
         switch (c) {
             case 'a':  //a for show all strobes
                simon_debug_setstrobes(SIMON_STROBE_ON);
@@ -336,18 +408,47 @@ int main (int argc, char **argv) {
             case 'c':  //the "count" of how many clocks to force.
                 //the system should clock forever is 0, until it hits a EOF
             	i32_tmp = atoi(optarg);
-            	simon_set_clocknumber(i32_tmp);  
-            	
+            	simon_set_clocknumber(i32_tmp);         	
             break;
-            case 'k':  //the keysize option
-              u32_tmp = atoi(optarg);  // the b option gives the block size
-              simon_set_keysize(u32_tmp);  //set the keysize
-              
+            case 'd':
+             //decrypt
+			//  if(GETFLAG(l_control_flags,FLAG_ENCRYPT)!=0)  //precedence to the first operation
+			//  {
+			    SETFLAG(l_control_flags,FLAG_DECRYPT); 
+			 // } 
+            
+            /* 
+            	// this is only if the DEBUG flag is set.
+			  #ifdef DEBUG
+			  	flags_debug = flags_debug | 0x00000001;
+			  #endif  
+			    simon_debug_setdebug(1);  //enable debugging of SIMON
+            */
+            break;            
+             case 'e':
+			  //encrypt
+			//  if(GETFLAG(l_control_flags,FLAG_DECRYPT)!=0)  //precedence to the first operation
+			//  {
+			    SETFLAG(l_control_flags,FLAG_ENCRYPT); 
+			//  }  
             break;
             case 'i':
             	flag_infileset=1;
             	strcpy(filenamein, optarg); 
             break;
+            case 'k':  //the keysize option
+              u32_tmp = atoi(optarg);  // the b option gives the block size
+              simon_set_keysize(u32_tmp);  //set the keysize
+              
+            break;            
+            case 'l':  //write the key steps to a log file.
+            	simon_set_logfile_ascii(optarg); 
+        
+            break;            
+            case 'm':
+                l_ciphermode=simon_set_ciphermode(optarg);
+            break;
+            
             case 'o':
             	flag_outfileset=1;
             	strcpy(filenameout, optarg); 
@@ -411,16 +512,8 @@ int main (int argc, char **argv) {
               simon_experimental_keyhash();
               
             break;            	
-            case 'l':  //write the key steps to a log file.
-            	simon_set_logfile_ascii(optarg); 
-        
-            break;
-            case 'w':  //secret word
-            	printf ("option w with value '%s'\n", optarg);
-            	//printf("strlen: %lu\n",strlen(optarg));
-            	//strcpy(configptr->key, optarg);
-            	
-            break;            
+
+                      
             case 'v':  //set the voltage
                simon_set_voltage_ascii(optarg); 
             break;
@@ -428,29 +521,16 @@ int main (int argc, char **argv) {
             case 'h':
 			  usage();
 			  exit(0);
-            break;
-            case 'e':
-			  //encrypt
-			//  if(GETFLAG(l_control_flags,FLAG_DECRYPT)!=0)  //precedence to the first operation
-			//  {
-			    SETFLAG(l_control_flags,FLAG_ENCRYPT); 
-			//  }  
-            break;
-            case 'd':
-             //decrypt
-			//  if(GETFLAG(l_control_flags,FLAG_ENCRYPT)!=0)  //precedence to the first operation
-			//  {
-			    SETFLAG(l_control_flags,FLAG_DECRYPT); 
-			 // } 
-            
-            /* 
-            	// this is only if the DEBUG flag is set.
-			  #ifdef DEBUG
-			  	flags_debug = flags_debug | 0x00000001;
-			  #endif  
-			    simon_debug_setdebug(1);  //enable debugging of SIMON
-            */
-            break;
+            break;            
+         
+         
+            case 'w':  //secret word, this argument is here but it does nothing.
+            	printf ("option w with value '%s'\n", optarg);
+            	//printf("strlen: %lu\n",strlen(optarg));
+            	//strcpy(configptr->key, optarg);
+            	
+            break;  
+   
             case 'x':  //write to LaTeX file
             	simon_set_latexfile_ascii(optarg); 
         
@@ -525,7 +605,7 @@ int main (int argc, char **argv) {
 				  //printf("%s\n",filenamestring);
 				  f_ioread=fopen(filenamein,"r");
 				  f_iowrite=fopen(filenameout,"w+");
-				  file_writesimon(f_ioread,f_iowrite);
+				  file_writesimon(f_ioread,f_iowrite, l_ciphermode);  //cipher mode is set by the -m option.  
    //			   printf("offset %llu\n",l_ioreadlength%(simon_get_blocksize()/8));  //divide block by 8 to get a byte boundary
 			   
 				  fclose(f_iowrite);
