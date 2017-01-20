@@ -82,7 +82,8 @@ int usage()
 {
 	version();
 fprintf(stdout,"This program is licensed under the GPLv2.\n"); 
-fprintf(stdout,"(c) 2015-2017 Brian Degnan, and the Georgia Institute of Technology\n\n");
+fprintf(stdout,"(c) 2015 Brian Degnan, and the Georgia Institute of Technology\n");
+fprintf(stdout,"(c) 2015-2017 Brian Degnan\n\n");
 fprintf(stdout,"Simontool is a program that is intended to aid in the development of hardware implementations of the Simon Cipher.  The program creates Piece-Wise-Linear wave forms that are of an appropriate format for SPICE simulators. \n");	
 fprintf(stdout,"\n   Options for simontool:\n");
 fprintf(stdout,"    -a       output all PWL files\n");
