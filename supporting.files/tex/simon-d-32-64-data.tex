@@ -1,0 +1,128 @@
+%WARNING: Automatically generated code for decryption.
+% arguments: -d -b 32 -k 64 -s 4d837db932f2fa04 -t c69be9bb -l log.d.32.64.txt -x simon-d-32-64
+% DEFINE THIS AT THE top:
+%\usepackage{tikz}
+%\usepackage{fp}
+%\usepackage{picture}
+%\newcommand{\declarecommand}[1]{\providecommand{#1}{}\renewcommand{#1}} 
+%
+\declarecommand\gridstep{0.1} %you can change this to change space of rendering
+\declarecommand\lineextstep{3} %you can change this to make dividers longer
+
+\declarecommand\bitfieldwidth{64}
+\declarecommand\kwidth{16}
+\declarecommand\numberofrounds{32}
+\declarecommand\km{2}
+\begin{figure}[h] 
+\begin{center}
+\resizebox {\columnwidth} {!} {
+\begin{tikzpicture}
+
+\def\BITARRAY{%
+{1,1,0,0,0,1,1,0,1,0,0,1,1,0,1,1,1,1,1,0,1,0,0,1,1,0,1,1,1,0,1,1},
+%c69b e9bb 
+{1,1,1,0,1,0,0,1,1,0,1,1,1,0,1,1,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1},
+%e9bb 7e01 
+{0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,0,0,1,1,1,1,0,1,0,0,0,1,0,1,1,0},
+%7e01 3d16 
+{0,0,1,1,1,1,0,1,0,0,0,1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,1,0,0,1,0,1},
+%3d16 bf65 
+{1,0,1,1,1,1,1,1,0,1,1,0,0,1,0,1,0,1,0,0,1,1,0,0,0,0,0,1,1,0,0,1},
+%bf65 4c19 
+{0,1,0,0,1,1,0,0,0,0,0,1,1,0,0,1,1,0,0,1,1,1,1,0,1,0,1,0,1,1,0,0},
+%4c19 9eac 
+{1,0,0,1,1,1,1,0,1,0,1,0,1,1,0,0,1,1,0,0,0,0,1,0,0,0,0,0,1,1,0,0},
+%9eac c20c 
+{1,1,0,0,0,0,1,0,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,1,0,0,0,1,0,0,0,1},
+%c20c 0d11 
+{0,0,0,0,1,1,0,1,0,0,0,1,0,0,0,1,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,1},
+%0d11 6041 
+{0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,1,0,1,1,1,1,0,0,1,1,1,0,1,0,1,0,0},
+%6041 79d4 
+{0,1,1,1,1,0,0,1,1,1,0,1,0,1,0,0,1,0,1,0,0,1,0,1,0,1,0,1,0,0,1,0},
+%79d4 a552 
+{1,0,1,0,0,1,0,1,0,1,0,1,0,0,1,0,1,1,1,0,1,1,0,1,1,0,1,1,0,1,1,1},
+%a552 edb7 
+{1,1,1,0,1,1,0,1,1,0,1,1,0,1,1,1,1,0,0,0,0,1,1,0,1,0,1,1,1,0,1,1},
+%edb7 86bb 
+{1,0,0,0,0,1,1,0,1,0,1,1,1,0,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,0},
+%86bb c07e 
+{1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,1,1,0,0,1,1,1,0,1,1,0,1,1,1,1},
+%c07e 676f 
+{0,1,1,0,0,1,1,1,0,1,1,0,1,1,1,1,0,1,1,0,1,1,1,1,1,1,0,0,0,0,1,0},
+%676f 6fc2 
+{0,1,1,0,1,1,1,1,1,1,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,0,0,0,0,1,1,1},
+%6fc2 1587 
+{0,0,0,1,0,1,0,1,1,0,0,0,0,1,1,1,0,1,1,1,0,0,0,1,0,0,0,0,0,0,1,0},
+%1587 7102 
+{0,1,1,1,0,0,0,1,0,0,0,0,0,0,1,0,0,0,1,1,1,0,1,0,1,1,1,0,0,1,0,1},
+%7102 3ae5 
+{0,0,1,1,1,0,1,0,1,1,1,0,0,1,0,1,1,0,0,1,0,0,0,0,1,1,1,1,1,0,1,0},
+%3ae5 90fa 
+{1,0,0,1,0,0,0,0,1,1,1,1,1,0,1,0,0,1,1,1,1,1,0,0,1,0,0,1,0,1,0,1},
+%90fa 7c95 
+{0,1,1,1,1,1,0,0,1,0,0,1,0,1,0,1,1,0,1,1,0,0,1,1,1,0,0,1,0,1,1,1},
+%7c95 b397 
+{1,0,1,1,0,0,1,1,1,0,0,1,0,1,1,1,0,1,1,0,1,0,0,0,0,1,1,1,1,1,0,0},
+%b397 687c 
+{0,1,1,0,1,0,0,0,0,1,1,1,1,1,0,0,1,0,0,0,0,1,1,1,0,0,1,1,1,0,1,1},
+%687c 873b 
+{1,0,0,0,0,1,1,1,0,0,1,1,1,0,1,1,1,0,0,0,1,1,1,1,1,1,0,0,1,1,1,1},
+%873b 8fcf 
+{1,0,0,0,1,1,1,1,1,1,0,0,1,1,1,1,0,1,0,1,0,1,1,1,1,1,1,1,1,0,1,0},
+%8fcf 57fa 
+{0,1,0,1,0,1,1,1,1,1,1,1,1,0,1,0,0,0,1,0,1,1,0,0,1,0,1,0,0,1,1,0},
+%57fa 2ca6 
+{0,0,1,0,1,1,0,0,1,0,1,0,0,1,1,0,0,1,0,1,0,0,1,1,0,0,1,0,0,1,1,1},
+%2ca6 5327 
+{0,1,0,1,0,0,1,1,0,0,1,0,0,1,1,1,0,0,1,1,0,1,1,1,1,0,1,1,1,0,1,0},
+%5327 37ba 
+{0,0,1,1,0,1,1,1,1,0,1,1,1,0,1,0,1,0,1,1,1,1,1,0,1,1,1,0,0,0,1,1},
+%37ba bee3 
+{1,0,1,1,1,1,1,0,1,1,1,0,0,0,1,1,1,0,1,1,1,1,0,0,1,0,1,0,0,0,1,0},
+%bee3 bca2 
+{1,0,1,1,1,1,0,0,1,0,1,0,0,0,1,0,0,1,1,0,0,1,0,1,0,1,1,0,0,1,0,1},
+%bca2 6565 
+{0,1,1,0,0,1,0,1,0,1,1,0,0,1,0,1,0,1,1,0,1,0,0,0,0,1,1,1,0,1,1,1}%
+%6565 6877 
+}
+\fill[violet]
+\foreach \row [count=\y] in \BITARRAY {
+\foreach \cell [count=\x] in \row {
+  \ifnum\cell=0 %
+    (\x*\gridstep-\gridstep, -\y*\gridstep+\gridstep) rectangle ++(\gridstep, -\gridstep)
+  \fi
+  \pgfextra{%
+    \global\let\maxx\x
+    \global\let\maxy\y
+    }%
+  }
+}
+; % now we do the grid
+\draw[thin] (0, 0) grid[step=\gridstep] (\maxx*\gridstep, -\maxy*\gridstep);
+\foreach \x in {0,...,\km} { %loop stepping m times via km
+   \pgfmathtruncatemacro{\mk}{\km-\x-1} 
+   \draw (\x*\kwidth*\gridstep,0) -- (\x*\kwidth*\gridstep,\gridstep*\lineextstep); %top ticks
+   \draw (\x*\kwidth*\gridstep,-\maxy*\gridstep) -- (\x*\kwidth*\gridstep,-\maxy*\gridstep-\gridstep); %bottom ticks
+   \ifnum\x<\km
+    \node[above] at(\x*\kwidth*\gridstep+\kwidth*\gridstep/2,0){\small \(X_{i+\mk}\)};
+	\fi
+}
+\draw (0,0) -- (-\gridstep*\lineextstep,0);
+\draw (0,-\maxy*\gridstep) -- (-\gridstep*\lineextstep,-\maxy*\gridstep);
+\node at(-\gridstep*\lineextstep,-\gridstep*\lineextstep/2){\small 0};
+\node at(-\gridstep*\lineextstep,-\maxy*\gridstep+\gridstep*\lineextstep/2){\small \numberofrounds};
+\node[rotate=90] at(-\gridstep*\lineextstep,-\maxy*\gridstep/2){\small rounds};
+%this creates the sidebar ticks
+\foreach \itick in {0,...,\maxy}{
+	 \pgfmathparse{int(mod((\itick-1),10))} 
+	 \ifnum\pgfmathresult<1
+	    \draw (0,-\itick*\gridstep) -- (-\gridstep*\lineextstep/3,-\itick*\gridstep);
+	 \fi
+}
+\end{tikzpicture}
+}%end resizebox 
+\end{center}%end center 
+\caption{The bit field with the decryption cryptotext of c69be9bb for SIMON32/64 where a white square is a 1 and a filled square is a 0.}
+\end{figure}%end figure 
+% END autogeneratedcode
