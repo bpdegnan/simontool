@@ -1,0 +1,446 @@
+
+% *** Authors should verify (and, if needed, correct) their LaTeX system  ***
+% *** with the testflow diagnostic prior to trusting their LaTeX platform ***
+% *** with production work. The IEEE's font choices and paper sizes can   ***
+% *** trigger bugs that do not appear when using other class files.       ***                          ***
+% The testflow support page is at:
+% http://www.michaelshell.org/tex/testflow/
+
+
+
+\documentclass[jounal,letterpaper]{IEEEtran}
+%
+% If IEEEtran.cls has not been installed into the LaTeX system files,
+% manually specify the path to it like:
+% \documentclass[journal]{../sty/IEEEtran}
+
+
+% *** CITATION PACKAGES ***
+%
+\usepackage{cite}
+\usepackage{lipsum}
+\usepackage{multirow,hhline}
+\usepackage{booktabs,xcolor,siunitx,colortbl} %color cells
+\usepackage{makecell}  %bold lines
+\usepackage{units}  %nice fraction
+\usepackage[numbered]{mcode}
+\usepackage{amsmath,amssymb,latexsym,float,epsfig,subfigure}
+\usepackage{upgreek}
+\usepackage{flushend}
+\usepackage{comment}
+\usepackage{listings}
+
+\usepackage{graphicx}
+%\usepackage{array}
+%\usepackage{hhline} 
+%\usepackage[math]{cellspace}
+%\newcommand{\degree}{\ensuremath{^\circ}}
+%\cellspacetoplimit 2pt
+%\cellspacebottomlimit 2pt
+%\usepackage{colortbl}
+%\newcolumntype{C}{c<{\kern\tabcolsep}@{}}
+\usepackage{tikz}
+\usepackage{fp}
+\usepackage{picture}
+\newcommand{\declarecommand}[1]{\providecommand{#1}{}\renewcommand{#1}} 
+
+\definecolor{TableBackgroundColor}{HTML}{FFFFFF}
+\definecolor{white}{HTML}{FFFFFF}
+\definecolor{red}{HTML}{FF0000}
+\definecolor{black}{HTML}{000000}
+\definecolor{lightpink}{HTML}{F2DCDB}
+\definecolor{lightblue}{HTML}{DAEEF3}
+\definecolor{lightpurple}{HTML}{E4DFEC}
+\definecolor{lightyellow}{HTML}{FFFFAE}
+\definecolor{lightgray}{HTML}{EFEFEF}
+\definecolor{nearwhite}{HTML}{FEFEFE}
+
+%\newcommand{\UC}[1]{\colorbox{yellow}{#1}}  %U color
+\newcommand{\reducedstrut}{\vrule width 0pt height .9\ht\strutbox depth .9\dp\strutbox\relax}
+\newcommand{\UC}[1]{%
+  \begingroup
+  \setlength{\fboxsep}{0pt}%  
+  \colorbox{lightpink}{\reducedstrut#1\/}%
+  \endgroup
+}
+\newcommand{\UW}[1]{%
+  \begingroup
+  \setlength{\fboxsep}{0pt}%  
+  \colorbox{lightblue}{\reducedstrut#1\/}%
+  \endgroup
+}
+
+\newcommand{\UV}[1]{%
+  \begingroup
+  \setlength{\fboxsep}{0pt}%  
+  \colorbox{lightpurple}{\reducedstrut#1\/}%
+  \endgroup
+}
+
+%\ifCLASSOPTIONcaptionsoff
+%  \usepackage[nomarkers]{endfloat}
+% \let\MYoriglatexcaption\caption
+% \renewcommand{\caption}[2][\relax]{\MYoriglatexcaption[#2]{#2}}
+%\fi
+% endfloat.sty was written by James Darrell McCauley, Jeff Goldberg and 
+% Axel Sommerfeldt. This package may be useful when used in conjunction with 
+% IEEEtran.cls'  captionsoff option. Some IEEE journals/societies require that
+% submissions have lists of figures/tables at the end of the paper and that
+% figures/tables without any captions are placed on a page by themselves at
+% the end of the document. If needed, the draftcls IEEEtran class option or
+% \CLASSINPUTbaselinestretch interface can be used to increase the line
+% spacing as well. Be sure and use the nomarkers option of endfloat to
+% prevent endfloat from "marking" where the figures would have been placed
+% in the text. The two hack lines of code above are a slight modification of
+% that suggested by in the endfloat docs (section 8.4.1) to ensure that
+% the full captions always appear in the list of figures/tables - even if
+% the user used the short optional argument of \caption[]{}.
+% IEEE papers do not typically make use of \caption[]'s optional argument,
+% so this should not be an issue. A similar trick can be used to disable
+% captions of packages such as subfig.sty that lack options to turn off
+% the subcaptions:
+% For subfig.sty:
+% \let\MYorigsubfloat\subfloat
+% \renewcommand{\subfloat}[2][\relax]{\MYorigsubfloat[]{#2}}
+% However, the above trick will not work if both optional arguments of
+% the \subfloat command are used. Furthermore, there needs to be a
+% description of each subfigure *somewhere* and endfloat does not add
+% subfigure captions to its list of figures. Thus, the best approach is to
+% avoid the use of subfigure captions (many IEEE journals avoid them anyway)
+% and instead reference/explain all the subfigures within the main caption.
+% The latest version of endfloat.sty and its documentation can obtained at:
+% http://www.ctan.org/pkg/endfloat
+%
+% The IEEEtran \ifCLASSOPTIONcaptionsoff conditional can also be used
+% later in the document, say, to conditionally put the References on a 
+% page by themselves.
+
+
+
+
+% *** PDF, URL AND HYPERLINK PACKAGES ***
+%
+%\usepackage{url}
+% url.sty was written by Donald Arseneau. It provides better support for
+% handling and breaking URLs. url.sty is already installed on most LaTeX
+% systems. The latest version and documentation can be obtained at:
+% http://www.ctan.org/pkg/url
+% Basically, \url{my_url_here}.
+
+
+
+
+% *** Do not adjust lengths that control margins, column widths, etc. ***
+% *** Do not use packages that alter fonts (such as pslatex).         ***
+% There should be no need to do such things with IEEEtran.cls V1.6 and later.
+% (Unless specifically asked to do so by the journal or conference you plan
+% to submit to, of course. )
+
+
+% correct bad hyphenation here
+\hyphenation{op-tical net-works semi-conduc-tor}
+
+
+\begin{document}
+%
+% paper title
+% Titles are generally capitalized except for words such as a, an, and, as,
+% at, but, by, for, in, nor, of, on, or, the, to and up, which are usually
+% not capitalized unless they are the first or last word of the title.
+% Linebreaks \\ can be used within to get better formatting as desired.
+% Do not put math or special symbols in the title.
+\title{Brief: On the design of solid state hard drives}
+%
+%
+% author names and IEEE memberships
+% note positions of commas and nonbreaking spaces ( ~ ) LaTeX will not break
+% a structure at a ~ so this keeps an author's name from being broken across
+% two lines.
+% use \thanks{} to gain access to the first footnote area
+% a separate \thanks must be used for each paragraph as LaTeX2e's \thanks
+% was not built to handle multiple paragraphs
+%
+
+\author{{Brian~Degnan}% <-this % stops a space
+\thanks{B. Degnan is with the Department
+of Electrical and Computer Engineering, Georgia Institute of Technology, Atlanta,
+GA, 30332 USA e-mail: (see http://www.propagation.gatech.edu/).  This document was prepared by request.}% <-this % stops a space
+%\thanks{Others are with Anonymous University.}% <-this % stops a space
+\thanks{Manuscript compiled \today}}
+% note the % following the last \IEEEmembership and also \thanks - 
+% these prevent an unwanted space from occurring between the last author name
+% and the end of the author line. i.e., if you had this:
+% 
+% \author{....lastname \thanks{...} \thanks{...} }
+%                     ^------------^------------^----Do not want these spaces!
+%
+% a space would be appended to the last name and could cause every name on that
+% line to be shifted left slightly. This is one of those "LaTeX things". For
+% instance, "\textbf{A} \textbf{B}" will typeset as "A B" not "AB". To get
+% "AB" then you have to do: "\textbf{A}\textbf{B}"
+% \thanks is no different in this regard, so shield the last } of each \thanks
+% that ends a line with a % and do not let a space in before the next \thanks.
+% Spaces after \IEEEmembership other than the last one are OK (and needed) as
+% you are supposed to have spaces between the names. For what it is worth,
+% this is a minor point as most people would not even notice if the said evil
+% space somehow managed to creep in.
+
+
+
+% The paper headers
+
+%\markboth{Journal of \LaTeX\ Class Files,~Vol.~14, No.~8, August~2015}%
+%{Shell \MakeLowercase{\textit{et al.}}: Bare Demo of IEEEtran.cls for IEEE Journals}
+
+% The only time the second header will appear is for the odd numbered pages
+% after the title page when using the twoside option.
+% 
+% *** Note that you probably will NOT want to include the author's ***
+% *** name in the headers of peer review papers.                   ***
+% You can use \ifCLASSOPTIONpeerreview for conditional compilation here if
+% you desire.
+
+
+
+
+% If you want to put a publisher's ID mark on the page you can do it like
+% this:
+%\IEEEpubid{0000--0000/00\$00.00~\copyright~2015 IEEE}
+% Remember, if you use this you must call \IEEEpubidadjcol in the second
+% column for its text to clear the IEEEpubid mark.
+
+
+
+% use for special paper notices
+%\IEEEspecialpapernotice{(Invited Paper)}
+
+
+
+
+% make the title area
+\maketitle
+
+% As a general rule, do not put math, special symbols or citations
+% in the abstract or keywords.
+\begin{abstract}
+The Solid State Drive (SSD) is a non-volatile storage device that shares a similar function to a traditional hard drive; however, the SSD architecture relies on a FLASH-type storage over a magnetic storage.  This note is an executive summary of SSD throughput.
+%This document gives and overview of SSD architecture, and throughput limits in order to bound the problems of lightweight encryption schemes.
+\end{abstract}
+
+% Note that keywords are not normally used for peerreview papers.
+%\begin{IEEEkeywords}
+%simon cipher, block cipher, simulation, RFID, IoT
+%\end{IEEEkeywords}
+
+
+
+
+
+
+% For peer review papers, you can put extra information on the cover
+% page as needed:
+% \ifCLASSOPTIONpeerreview
+% \begin{center} \bfseries EDICS Category: 3-BBND \end{center}
+% \fi
+%
+% For peerreview papers, this IEEEtran command inserts a page break and
+% creates the second title. It will be ignored for other modes.
+\IEEEpeerreviewmaketitle
+
+
+
+\section{Introduction}
+\IEEEPARstart{T}{he} Solid State Drive (SSD) is a semiconductor-based replacement for the traditional hard drive.  The traditional hard drive is bounded by a physical medium of spinning magnetic platters, and this is an example of physically constrained system.  As an example, the hard drive is limited by the speed of the platters, the bounds on the head movement and the track width.  The SSD is an electrically constrained system and examples of these limits the oxide thickness of a floating-gate transistor, and number of write cycles.  SSDs mirror the functionality of hard drives.
+
+
+%The purpose of this document is to define the behavior of the SSD device, survey devices that are available, give an overview of the physics involved in the electrical behavior of the FLASH, and give throughput values in a context for lightweight encryption schemes. 
+
+\section{The SSD device}
+The SSD is a device that mimics the traditional hard drive in behavior, but uses solid-state semiconductor components instead of a mechanical medium.  The SSD as a system is illustrated in Figure \ref{fig:ssdoverview}, and the device contains a controller and two types of storage, volatile and non-volatile.  The purpose of the controller is to mimic the behavior of a hard drive and control writes.  The non-volatile storage is the FLASH transistors from where solid state drives get their name.  The volatile storage is a cache for temporary storage of data. 
+
+\begin{figure}[ht]
+  \begin{center}
+  \epsfxsize=3.2in
+  \epsffile{eps/ssdoverview.eps} 
+
+   \caption{The illustration shows the basic architecture of a SSD.  The major components are the cache, controller and FLASH storage.  The major routes of communication are by the IO bus, the cache bus and the FLASH bus.  The IO bus is connected between a computer interface and the controller, where the purpose of the controller is to mimic the behavior of a storage device and control the writes and reads.  The controller also schedules writes between the DRAM cache and FLASH.
+   }
+   \label{fig:ssdoverview}
+   \end{center}
+   \vskip -0.2in
+\end{figure}
+
+\section{Bounding SSD Perforamnce}
+The SSD is created from several NAND FLASH ICs.  As an individual device, the NAND FLASH perform differently between generations; however, this performance can be masked by use of DRAM cache.  The NAND in ``NAND FLASH" refers to the addressing architecture and the FLASH term refers to the charge storage technique.  The threshold of the FLASH MOSFET will shift depending on the charge that is trapped on the gate.  The NAND FLASH is arranged in pages and reading and writing is based on this granularity\cite{goda2012scaling,lue2013novel,chen2012highly}.
+
+Due to the abstraction away from the FLASH performance due to the DRAM cache, the write time of a packaged device is more of an academic exercise, and each 8k bank completes a write in 0.33ms to 0.45ms.  The difference in these numbers is the difference between 50MB/sec and 33MB/sec; however, this is also abstracted away by local cache on the FLASH ICs, and possibly the controller.  The slower write speed is preferred for endurance.\cite{park2015three,kim2013channel}. The bus speed of these devices will remain at approximately 20ns (50MHz) with current interconnect technologies with writes on the order of 200us and ``erasing" on the order of 2ms.  Bank reads are speed limited, and thereby are bus limited. 
+
+Due to the thin oxide and the tunneling process, even if the density of the devices increases, I do not believe that the speed of writing or reading will increase due to the physics of quantum transport.  The only increases that will be seen is interconnect and concurrent writes.  
+
+
+
+\begin{table}[t]
+ \caption{Interface Speeds}
+  \label{tab:interfacespeeds}
+\centering
+%\setlength{\arrayrulewidth}{1.5pt} %to make things render in Adobe well
+%\rowcolors{1}{nearwhite}{lightgray}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Interface & Version& Width & Throughput & 128-bit\\
+ & & & &completion\\
+\hline
+SATA &1.0 & -- & 150 MiB/sec &100nS \\
+\hline
+SATA &2.0 & -- & 300 MiB/sec &50nS\\
+\hline
+SATA &3.0 & -- & 600 MiB/sec &25nS\\
+\hline
+PCI-E &1.0 & 4x & 1 GiB/sec & 15nS \\
+\hline
+PCI-E &2.0 & 4x & 2 GiB/sec & 7.5nS\\
+\hline
+PCI-E &3.0 & 4x & 4 GiB/sec & 3.75nS\\
+\hline
+DDR  &2 & 128b & 8 GiB/sec & 1.8nS\\
+\hline
+DDR  &3 & 128b & 15 GiB/sec & 900pS\\
+\hline
+FLASH & Embedded & -- & 50 MiB/sec &300nS \\
+\hline
+FLASH & Server & -- & 35 MiB/sec & 440nS \\
+\hline
+
+\end{tabular}
+\end{table}
+
+
+%\section{Commercially Available Devices}
+%
+%\begin{table}[t]
+% \caption{The Simon block and key configuration options  }
+%  \label{tab:simon}
+%\centering
+%%\setlength{\arrayrulewidth}{1.5pt} %to make things render in Adobe well
+%%\rowcolors{1}{nearwhite}{lightgray}
+%\begin{tabular}{|c|c|c|c|}
+%\hline
+%Storage size && Cache size& Manufacturer\\
+%\hline
+%400GB\(^1\) & 2GiB & 16 & 4 & \(z_0\)& 32\\
+%
+%\hline
+%\multicolumn{4}{|c|}{
+%{\tiny
+%\(\begin{aligned}[c] 
+%%&\\
+%z_0 &= 11111010001001010110000111001101111101000100101011000011100110 \rule{0pt}{2.6ex}\\
+%z_1 &= 10001110111110010011000010110101000111011111001001100001011010\\
+%z_2 &= 10101111011100000011010010011000101000010001111110010110110011\\
+%z_3 &= 11011011101011000110010111100000010010001010011100110100001111\\
+%z_4 &= 11010001111001101011011000100000010111000011001010010011101111 \rule[-2.6ex]{0pt}{0pt}\\
+%%&\\
+%\end{aligned}\)}
+%}\\
+%\hline
+%\end{tabular}
+%\end{table}
+%
+%
+%\subsection{\(z_x\) generation}
+%The Simon Cipher key schedule is complex and uses a stream of constant values to eliminate slide properties in the key expansion. The value of \(z_x\) is a function of the selection of block and key bit size, and this in turn, selects the logic of the Linear Feedback Shift Register (LFSR).  Mathematically, the bitstream of the LFSR can be created in multiple ways; however, in hardware there exists only a single simple method and this method described in Table \ref{tab:lfsr}.  It is of note that circuit implementation is the mirror of the implementation described in the original Simon Cipher document.  This is due to the fact that most significant bit is the leftmost bit in the tools that are being used to make the Simon Cipher circuits.
+%
+%\section{Test Vectors}
+%The original Simon Cipher document listed a series of test vectors for verification of implementations\cite{beaulieu2013simon}.  The simontool software source tree includes script called \emph{simontest.sh} that was used to verify the logical implementation of the Simon Cipher\cite{simontool:github}. The simontool program has the ability to export \LaTeX source for generating bit fields using the TiKZ package by passing simontool the -x option.  Examples of cipher verification for SIMON32/64 and SIMON128/128 are presented in the following sections.
+%
+%\newpage
+%% use section* for acknowledgment
+%\section*{Acknowledgment}
+%This research was supported by an appointment to the Intelligence Community Postdoctoral Research Fellowship Program at the Georgia Institute of Technology, administered by Oak Ridge Institute for Science and Education through an interagency agreement between the U.S. Department of Energy and the Office of the Director of National Intelligence.
+
+% Can use something like this to put references on a page
+% by themselves when using endfloat and the captionsoff option.
+\ifCLASSOPTIONcaptionsoff
+  \newpage
+\fi
+
+
+
+% trigger a \newpage just before the given reference
+% number - used to balance the columns on the last page
+% adjust value as needed - may need to be readjusted if
+% the document is modified later
+%\IEEEtriggeratref{8}
+% The "triggered" command can be changed if desired:
+%\IEEEtriggercmd{\enlargethispage{-5in}}
+
+% references section
+
+% can use a bibliography generated by BibTeX as a .bbl file
+% BibTeX documentation can be easily obtained at:
+% http://mirror.ctan.org/biblio/bibtex/contrib/doc/
+% The IEEEtran BibTeX style support page is at:
+% http://www.michaelshell.org/tex/ieeetran/bibtex/
+\bibliographystyle{IEEEtran}
+% argument is your BibTeX string definitions and bibliography database(s)
+%\bibliography{IEEEabrv,../bib/paper}
+%
+% <OR> manually copy in the resultant .bbl file
+% set second argument of \begin to the number of references
+% (used to reserve space for the reference number labels box)
+%\begin{thebibliography}{1}
+%
+%\bibitem{IEEEhowto:kopka}
+%H.~Kopka and P.~W. Daly, \emph{A Guide to \LaTeX}, 3rd~ed.\hskip 1em plus
+%  0.5em minus 0.4em\relax Harlow, England: Addison-Wesley, 1999.
+%
+%\end{thebibliography}
+
+\bibliography{flashreferences}
+
+% biography section
+% 
+% If you have an EPS/PDF photo (graphicx package needed) extra braces are
+% needed around the contents of the optional argument to biography to prevent
+% the LaTeX parser from getting confused when it sees the complicated
+% \includegraphics command within an optional argument. (You could create
+% your own custom macro containing the \includegraphics command to make things
+% simpler here.)
+%\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{mshell}}]{Michael Shell}
+% or if you just want to reserve a space for a photo:
+
+%\begin{IEEEbiography}{Person}
+%Biography text here.
+%\end{IEEEbiography}
+
+% if you will not have a photo at all:
+%\begin{IEEEbiographynophoto}{Person}
+%Biography text here.
+%\end{IEEEbiographynophoto}
+
+% insert where needed to balance the two columns on the last page with
+% biographies
+%\newpage
+
+%\begin{IEEEbiographynophoto}{Person}
+%Biography text here.
+%\end{IEEEbiographynophoto}
+
+% You can push biographies down or up by placing
+% a \vfill before or after them. The appropriate
+% use of \vfill depends on what kind of text is
+% on the last page and whether or not the columns
+% are being equalized.
+
+%\vfill
+
+% Can be used to pull up biographies so that the bottom of the last one
+% is flush with the other column.
+%\enlargethispage{-5in}
+
+
+
+% that's all folks
+\end{document}
+
+
