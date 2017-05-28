@@ -73,7 +73,7 @@ do
    CMDARGKEY="$SIMON64CHAIN$i" #concat the chaining var and the input
    #echo "$CMDARGKEY"
    #feed the key into simontool
-   CMDRESULT=$($SIMONEXEC -e -b 32 -k 64 -s $CMDARGKEY  -t 00000000 -y | tail -2 | head -1)
+   CMDRESULT=$($SIMONEXEC -e -b 32 -k 64 -s $CMDARGKEY  -t 00000000 -y -u | tail -2 | head -1)
    CMDRESULT=$(echo "${CMDRESULT//[[:space:]]/}" | sed 's/.*://')  #remove the formatting
    #echo "$CMDRESULT" 
    STRSIZE=${#CMDRESULT}  #get the string size
@@ -111,7 +111,7 @@ do
    CMDARGKEY="$SIMON256CHAIN$i" #concat the chaining var and the input
    #echo "$CMDARGKEY"
    #feed the key into simontool
-   CMDRESULT=$($SIMONEXEC -e -b 128 -k 256 -s $CMDARGKEY  -t 00000000000000000000000000000000 -y | tail -2 | head -1)
+   CMDRESULT=$($SIMONEXEC -e -b 128 -k 256 -s $CMDARGKEY  -t 00000000000000000000000000000000 -y -u | tail -2 | head -1)
    CMDRESULT=$(echo "${CMDRESULT//[[:space:]]/}" | sed 's/.*://')  #remove the formatting
    #echo "$CMDRESULT" 
    STRSIZE=${#CMDRESULT}  #get the string size
