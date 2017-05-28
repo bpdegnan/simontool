@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "simon.h"
 
 #define _BUILD_MAIN
-static const u32 prog_version=0x00010004;
+static const u32 prog_version=0x00010005;
 
 /*
 
@@ -100,7 +100,7 @@ fprintf(stdout,"    -o <arg> output filename from encrypt/decrypt\n");
 fprintf(stdout,"    -r <arg> number of rounds (experimental) *\n");
 fprintf(stdout,"    -s <arg> key hex in ASCII\n");
 fprintf(stdout,"    -t <arg> test hex in ASCII\n");
-fprintf(stdout,"    -u       hash ASCII (experimental), disables the LFSR *\n");
+fprintf(stdout,"    -u       hash ASCII (experimental), changes architecture *\n");
 fprintf(stdout,"    -v <arg> set voltage for PWL data\n");
 fprintf(stdout,"    -x <arg> (experimental) LaTeX code output where *\n");
 fprintf(stdout,"             <arg> becomes the prefix for -key.tex and -data.tex files \n");
@@ -537,6 +537,7 @@ int main (int argc, char **argv) {
         
             break;
             case 'y':
+            
                 simon_set_printoutput();  //select the printout.
             break;
             case ':':

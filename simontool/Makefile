@@ -103,9 +103,6 @@ C_OBJECTS_$(1) = $(addprefix $(OBJ)/$(1)_, $(C_OBJECTS))
 
 $(1): $$(C_OBJECTS_$(1))
 	$(CC) $(LDFLAGS) -o $(OUTPUTDIR).elf $$^
-#	$(CC) $(LDFLAGS) -o $(OUTPUTDIR)-$$@.elf $$^
-#	$(OBJCOPY) -O binary $(OUTPUTDIR)-$$@.elf $(OUTPUTDIR)-$$@.bin
-#	$(SIZE) $$^ $(OUTPUTDIR)-$$@.elf
 
 $$(C_OBJECTS_$(1)): $(OBJ)/$(1)_%.o: %.c Makefile $(OBJ) $(BIN)
 	$(CC) $(CFLAGS) -D$(1) -c -o $$@ $$<

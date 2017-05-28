@@ -743,6 +743,7 @@ u32 simon_hardware_getZ()
 		exit(0);
 	      break;
 	}
+/*	
 	// modification for the key schedule hash
 	// from the -u option
 	if(simonconfigptr->experimental_keyschedulehash !=0)
@@ -750,7 +751,7 @@ u32 simon_hardware_getZ()
 	    //l_z = 0;  //by hard coding l_z to 0, we successfully remove the lfsr hardware
 	   l_z =l_togglebit;
 	}
-	
+*/	
 	return(l_z);
 }
 
@@ -1661,10 +1662,21 @@ u8 simon_hardware_encryptkeyupdate()
         break;    
     } 
 
+
 		key_xor34 = bit3 ^ bit4;  //key_xor01 represents the tmp<-SR3 k[i-1], SR1 XOR tmp
+
+	// modification for the key schedule hash, this replaces the XOR with an AND
+	// from the -u option
+	// I just overwrite key_xor34 so I can remove this code if necessary
+		if(simonconfigptr->experimental_keyschedulehash !=0)
+		{
+			key_xor34 = bit3 & bit4;
+		}
+
 		k_bit0=arbreg_getbit(p_hardware_key,0);
 		k_bit_s=(0x01 & ~k_bit0);  //invert the bit, force a bit via mask
-		//^^^ bit 0 represents the NOT of the last bit of k, so current key - 2;     
+		//^^^ bit 0 represents the NOT of the last bit of k, so current key - 2;  
+		   
       	//printf("%04u key_xor01[%x] = bit1[%x] ^ bit0[%x]; k_bit_s[%x]=(0x01 & ~k_bit0[~%x,%x]);\n",clk_count,key_xor01,bit1,bit0,k_bit_s,~k_bit0,k_bit0);
       	// this is where things get interesting.  If the clock is < 3, the registers
       	// shift from left to right, but there's a mux that will exist on the upper

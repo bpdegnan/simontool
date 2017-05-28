@@ -16,23 +16,23 @@ The simontool program is licensed under the GPLv2.
    Options for simontool:
     -a       output all PWL files
     -b <arg> configure the block size in bits
-    * -c <arg> limit clock cycles
+    -c <arg> limit clock cycles *
     -d       decryption
     -e       encryption
     -h       help (this page)
     -i <arg> input filename to encrypt/decrypt
     -k <arg> key size in bits
-    *  -l <arg> include logfile with name
+    -l <arg> (experimental) include logfile with name *
     -o <arg> output filename from encrypt/decrypt
     -m <arg> specify block code book type
-    *  -r <arg> number of rounds (experimental)
+    -r <arg> (experimental) number of rounds *
     -s <arg> key hex in ASCII
     -t <arg> test hex in ASCII
-    *  -u       hash ASCII (experimental), disables the LFSR 
+    -u       hash ASCII (experimental), changes architecture *
     -v <arg> set voltage for PWL data
-    *  -x <arg> (experimental) LaTeX code output where 
+    -x <arg> (experimental) LaTeX code output where 
              <arg> becomes the prefix for -key.tex and -data.tex files 
-    *  -y       (experimental) printout expanded data and key to stdout  
+    -y       (experimental) printout expanded data and key to stdout  *
 
     * denotes options that generally should not be used.
 
