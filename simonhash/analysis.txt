@@ -1,0 +1,672 @@
+0 ./hashfiles/random1M.128.128.0.0.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   131072
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+1 ./hashfiles/random1M.128.128.0.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   131072
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+2 ./hashfiles/random1M.128.128.1.0.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   131072
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+3 ./hashfiles/random1M.128.128.1.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   131072
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+4 ./hashfiles/random1M.128.64.0.0.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   131072
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+5 ./hashfiles/random1M.128.64.0.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   131072
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+6 ./hashfiles/random1M.128.64.1.0.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   131072
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+7 ./hashfiles/random1M.128.64.1.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   131072
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+8 ./hashfiles/random1M.256.128.0.0.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES    65536
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+9 ./hashfiles/random1M.256.128.0.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES    65536
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+10 ./hashfiles/random1M.256.128.1.0.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES    65536
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+11 ./hashfiles/random1M.256.128.1.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES    65536
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+12 ./hashfiles/random1M.256.256.0.0.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES    65536
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+13 ./hashfiles/random1M.256.256.0.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES    65536
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+14 ./hashfiles/random1M.256.256.1.0.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES    65536
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+15 ./hashfiles/random1M.256.256.1.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES    65536
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+16 ./hashfiles/random1M.64.32.0.0.hash
+COUNT_COLLISIONS 18
+COUNT_TOTALLINES   262144
+hit: b7a97178
+col loc: 21381
+col2loc: 162531
+GAP: 141150
+17 ./hashfiles/random1M.64.32.0.1.hash
+COUNT_COLLISIONS 12
+COUNT_TOTALLINES   262144
+hit: 47199687
+col loc: 5557
+col2loc: 65379
+GAP: 59822
+18 ./hashfiles/random1M.64.32.1.0.hash
+COUNT_COLLISIONS 18
+COUNT_TOTALLINES   262144
+hit: ab45decc
+col loc: 2390
+col2loc: 148263
+GAP: 145873
+19 ./hashfiles/random1M.64.32.1.1.hash
+COUNT_COLLISIONS 6
+COUNT_TOTALLINES   262144
+hit: 38adb8f1
+col loc: 29381
+col2loc: 169986
+GAP: 140605
+20 ./hashfiles/random1M.64.64.0.0.hash
+COUNT_COLLISIONS 2
+COUNT_TOTALLINES   262144
+hit: 549b935647a71ddc
+col loc: 93391
+col2loc: 192511
+GAP: 99120
+21 ./hashfiles/random1M.64.64.0.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   262144
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+22 ./hashfiles/random1M.64.64.1.0.hash
+COUNT_COLLISIONS 2
+COUNT_TOTALLINES   262144
+hit: 000000003a57304b
+col loc: 159022
+col2loc: 213810
+GAP: 54788
+23 ./hashfiles/random1M.64.64.1.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   262144
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+24 ./hashfiles/random1M.96.48.0.0.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   174763
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+25 ./hashfiles/random1M.96.48.0.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   174763
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+26 ./hashfiles/random1M.96.48.1.0.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   174763
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+27 ./hashfiles/random1M.96.48.1.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   174763
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+28 ./hashfiles/random1M.96.96.0.0.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   174763
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+29 ./hashfiles/random1M.96.96.0.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   174763
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+30 ./hashfiles/random1M.96.96.1.0.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   174763
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+31 ./hashfiles/random1M.96.96.1.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   174763
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+32 ./hashfiles/unix.128.128.0.0.hash
+COUNT_COLLISIONS 8410
+COUNT_TOTALLINES    51377
+hit: 182e5e344dfd48672cee8b8982b746f9
+col loc: 10100
+col2loc: 10132
+GAP: 32
+33 ./hashfiles/unix.128.128.0.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES    51377
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+34 ./hashfiles/unix.128.128.1.0.hash
+COUNT_COLLISIONS 511
+COUNT_TOTALLINES    51377
+hit: af52d789637b70f78ca744fac8d71973
+col loc: 10112
+col2loc: 10176
+GAP: 64
+35 ./hashfiles/unix.128.128.1.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES    51377
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+36 ./hashfiles/unix.128.64.0.0.hash
+COUNT_COLLISIONS 8513
+COUNT_TOTALLINES    51377
+hit: 2c8abefef6628e74
+col loc: 890
+col2loc: 906
+GAP: 16
+37 ./hashfiles/unix.128.64.0.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES    51377
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+38 ./hashfiles/unix.128.64.1.0.hash
+COUNT_COLLISIONS 525
+COUNT_TOTALLINES    51377
+hit: d78edb1139ffc147
+col loc: 10112
+col2loc: 10144
+GAP: 32
+39 ./hashfiles/unix.128.64.1.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES    51377
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+40 ./hashfiles/unix.256.128.0.0.hash
+COUNT_COLLISIONS 4123
+COUNT_TOTALLINES    25689
+hit: 4f9c157874d17262a5a32db2378ccd26
+col loc: 5050
+col2loc: 5082
+GAP: 32
+41 ./hashfiles/unix.256.128.0.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES    25689
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+42 ./hashfiles/unix.256.128.1.0.hash
+COUNT_COLLISIONS 234
+COUNT_TOTALLINES    25689
+hit: c5561d1a401f346da8fa3d74d6a1a08d
+col loc: 5056
+col2loc: 5120
+GAP: 64
+43 ./hashfiles/unix.256.128.1.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES    25689
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+44 ./hashfiles/unix.256.256.0.0.hash
+COUNT_COLLISIONS 4123
+COUNT_TOTALLINES    25689
+hit: f1ca406696fd9b7ba2a15a419dcc272593286b3f5e071fcb6dc05810bd1d4870
+col loc: 5050
+col2loc: 5082
+GAP: 32
+45 ./hashfiles/unix.256.256.0.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES    25689
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+46 ./hashfiles/unix.256.256.1.0.hash
+COUNT_COLLISIONS 234
+COUNT_TOTALLINES    25689
+hit: da118d806380d137835ec40ad7c4025796007dfa5bf430466cb2578310f4cf53
+col loc: 5056
+col2loc: 5120
+GAP: 64
+47 ./hashfiles/unix.256.256.1.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES    25689
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+48 ./hashfiles/unix.64.32.0.0.hash
+COUNT_COLLISIONS 25068
+COUNT_TOTALLINES   102754
+hit: 7e474d46
+col loc: 2
+col2loc: 4
+GAP: 2
+49 ./hashfiles/unix.64.32.0.1.hash
+COUNT_COLLISIONS 7468
+COUNT_TOTALLINES   102754
+hit: a9bbba89
+col loc: 68400
+col2loc: 68569
+GAP: 169
+50 ./hashfiles/unix.64.32.1.0.hash
+COUNT_COLLISIONS 12087
+COUNT_TOTALLINES   102754
+hit: 8e6697d1
+col loc: 28
+col2loc: 30
+GAP: 2
+51 ./hashfiles/unix.64.32.1.1.hash
+COUNT_COLLISIONS 4
+COUNT_TOTALLINES   102754
+hit: a1af702a
+col loc: 44876
+col2loc: 85252
+GAP: 40376
+52 ./hashfiles/unix.64.64.0.0.hash
+COUNT_COLLISIONS 20779
+COUNT_TOTALLINES   102754
+hit: 549b9356b59c932b
+col loc: 33
+col2loc: 35
+GAP: 2
+53 ./hashfiles/unix.64.64.0.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   102754
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+54 ./hashfiles/unix.64.64.1.0.hash
+COUNT_COLLISIONS 10323
+COUNT_TOTALLINES   102754
+hit: 0000ffff7e64534a
+col loc: 68
+col2loc: 3068
+GAP: 3000
+55 ./hashfiles/unix.64.64.1.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   102754
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+56 ./hashfiles/unix.96.48.0.0.hash
+COUNT_COLLISIONS 11217
+COUNT_TOTALLINES    68503
+hit: 53254e3fbb5a
+col loc: 13467
+col2loc: 13507
+GAP: 40
+57 ./hashfiles/unix.96.48.0.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES    68503
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+58 ./hashfiles/unix.96.48.1.0.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES    68503
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+59 ./hashfiles/unix.96.48.1.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES    68503
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+60 ./hashfiles/unix.96.96.0.0.hash
+COUNT_COLLISIONS 11217
+COUNT_TOTALLINES    68503
+hit: 9f63c57321808f5cb4976657
+col loc: 13467
+col2loc: 13507
+GAP: 40
+61 ./hashfiles/unix.96.96.0.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES    68503
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+62 ./hashfiles/unix.96.96.1.0.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES    68503
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+63 ./hashfiles/unix.96.96.1.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES    68503
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+64 ./hashfiles/zero1M.128.128.0.0.hash
+COUNT_COLLISIONS 131072
+COUNT_TOTALLINES   131072
+hit: e86c5730802e1570db2f0496b45fd2ec
+col loc: 1
+col2loc: 33
+GAP: 32
+65 ./hashfiles/zero1M.128.128.0.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   131072
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+66 ./hashfiles/zero1M.128.128.1.0.hash
+COUNT_COLLISIONS 8192
+COUNT_TOTALLINES   131072
+hit: 8a2646ea6666ccccb752d13426262626
+col loc: 16
+col2loc: 240
+GAP: 224
+67 ./hashfiles/zero1M.128.128.1.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   131072
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+68 ./hashfiles/zero1M.128.64.0.0.hash
+COUNT_COLLISIONS 131072
+COUNT_TOTALLINES   131072
+hit: 334353a63471c79c
+col loc: 1
+col2loc: 17
+GAP: 16
+69 ./hashfiles/zero1M.128.64.0.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   131072
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+70 ./hashfiles/zero1M.128.64.1.0.hash
+COUNT_COLLISIONS 8192
+COUNT_TOTALLINES   131072
+hit: 8a798a798ed78ed7
+col loc: 16
+col2loc: 48
+GAP: 32
+71 ./hashfiles/zero1M.128.64.1.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   131072
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+72 ./hashfiles/zero1M.256.128.0.0.hash
+COUNT_COLLISIONS 65536
+COUNT_TOTALLINES    65536
+hit: 0a8afa7890e28e59507cd7cd6ba8e626
+col loc: 1
+col2loc: 33
+GAP: 32
+73 ./hashfiles/zero1M.256.128.0.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES    65536
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+74 ./hashfiles/zero1M.256.128.1.0.hash
+COUNT_COLLISIONS 4096
+COUNT_TOTALLINES    65536
+hit: 3b1f49e54c683e92d22d7a96d22d7a96
+col loc: 16
+col2loc: 816
+GAP: 800
+75 ./hashfiles/zero1M.256.128.1.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES    65536
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+76 ./hashfiles/zero1M.256.256.0.0.hash
+COUNT_COLLISIONS 65536
+COUNT_TOTALLINES    65536
+hit: b6042e65b35c44579e164adf78e2061abc8ed41d23beca0ece6a9d12134ae03c
+col loc: 1
+col2loc: 33
+GAP: 32
+77 ./hashfiles/zero1M.256.256.0.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES    65536
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+78 ./hashfiles/zero1M.256.256.1.0.hash
+COUNT_COLLISIONS 4096
+COUNT_TOTALLINES    65536
+hit: 316ffe6ae3bd2cb8bf6eae5537e626dd7aa97cb9df0cd91c446e4ce6cce6c46e
+col loc: 16
+col2loc: 816
+GAP: 800
+79 ./hashfiles/zero1M.256.256.1.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES    65536
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+80 ./hashfiles/zero1M.64.32.0.0.hash
+COUNT_COLLISIONS 262144
+COUNT_TOTALLINES   262144
+hit: 6f6197ad
+col loc: 1
+col2loc: 3
+GAP: 2
+81 ./hashfiles/zero1M.64.32.0.1.hash
+COUNT_COLLISIONS 243885
+COUNT_TOTALLINES   262144
+hit: 7d087c31
+col loc: 18260
+col2loc: 65069
+GAP: 46809
+82 ./hashfiles/zero1M.64.32.1.0.hash
+COUNT_COLLISIONS 131072
+COUNT_TOTALLINES   262144
+hit: 00000001
+col loc: 2
+col2loc: 6
+GAP: 4
+83 ./hashfiles/zero1M.64.32.1.1.hash
+COUNT_COLLISIONS 14
+COUNT_TOTALLINES   262144
+hit: 9df84244
+col loc: 12342
+col2loc: 257077
+GAP: 244735
+84 ./hashfiles/zero1M.64.64.0.0.hash
+COUNT_COLLISIONS 262144
+COUNT_TOTALLINES   262144
+hit: 549b6ca93bfafb04
+col loc: 1
+col2loc: 5
+GAP: 4
+85 ./hashfiles/zero1M.64.64.0.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   262144
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+86 ./hashfiles/zero1M.64.64.1.0.hash
+COUNT_COLLISIONS 131072
+COUNT_TOTALLINES   262144
+hit: fffffffffffffffe
+col loc: 2
+col2loc: 6
+GAP: 4
+87 ./hashfiles/zero1M.64.64.1.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   262144
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+88 ./hashfiles/zero1M.96.48.0.0.hash
+COUNT_COLLISIONS 174763
+COUNT_TOTALLINES   174763
+hit: ae3b46cc9177
+col loc: 1
+col2loc: 41
+GAP: 40
+89 ./hashfiles/zero1M.96.48.0.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   174763
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+90 ./hashfiles/zero1M.96.48.1.0.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   174763
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+91 ./hashfiles/zero1M.96.48.1.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   174763
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+92 ./hashfiles/zero1M.96.96.0.0.hash
+COUNT_COLLISIONS 174762
+COUNT_TOTALLINES   174763
+hit: 38783b98c37696437d545201
+col loc: 1
+col2loc: 41
+GAP: 40
+93 ./hashfiles/zero1M.96.96.0.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   174763
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+94 ./hashfiles/zero1M.96.96.1.0.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   174763
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
+95 ./hashfiles/zero1M.96.96.1.1.hash
+COUNT_COLLISIONS 0
+COUNT_TOTALLINES   174763
+hit: 0
+col loc: 0
+col2loc: 0
+GAP: 0
